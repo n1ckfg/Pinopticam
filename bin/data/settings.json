@@ -1,0 +1,71 @@
+{
+    "ISO": 0,
+    "LED": false,
+    "LED_PIN": 5,
+    "autoISO": true,
+    "autoShutter": true,
+    "brightness": 50,
+    "burstModeEnabled": true,
+    "cameraDeviceID": 0,
+    "contrast": -10,
+    "displayAlpha": 255,
+    "displayLayer": 0,
+    "doDisableSoftwareSaturation": false,
+    "doDisableSoftwareSharpen": false,
+    "drawCropRectangle": {
+        "height": 0.0,
+        "width": 0.0,
+        "x": 0.0,
+        "y": 0.0
+    },
+    "drawRectangle": {
+        "height": 0.0,
+        "width": 0.0,
+        "x": 0.0,
+        "y": 0.0
+    },
+    "dreLevel": 0,
+    "enableExtraVideoFilter": false,
+    "enablePixels": false,
+    "enableRaw": false,
+    "enableStillPreview": true,
+    "enableTexture": true,
+    "exposurePreset": "Auto",
+    "extraImageFilter": "None",
+    "extraImageFilterParamConfig": {
+        "name": ""
+    },
+    "flickerCancellation": false,
+    "frameStabilization": false,
+    "framerate": 30,
+    "imageFilter": "None",
+    "imageFilterParamConfig": {
+        "name": ""
+    },
+    "isoNormalized": 0.0,
+    "meteringType": "Average",
+    "mirror": "None",
+    "recordingBitrateMB": 2.0,
+    "rotation": 0,
+    "saturation": -100,
+    "savedPhotosFolderName": "photos",
+    "sensorCropRectangle": {
+        "height": 100.0,
+        "width": 100.0,
+        "x": 0.0,
+        "y": 0.0
+    },
+    "sensorWidth": 2592,
+    "sensorHeight": 1944,
+    "sharpness": 100,
+    "shutterSpeed": 0,
+    "shutterSpeedNormalized": 0.0,
+    "stillPreviewHeight": 720,
+    "stillPreviewWidth": 1280,
+    "stillQuality": 100,
+    "whiteBalance": "Auto",
+    "whiteBalanceGainB": 0.0,
+    "whiteBalanceGainR": 0.0,
+    "zoomLevel": 0,
+    "zoomLevelNormalized": 0.0
+}

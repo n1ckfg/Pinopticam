@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<settings>
+    <host>BrazilV.local</host>
+    <post_port>7110</post_port>
+    <stream_port>7111</stream_port>
+    <ws_port>7112</ws_port>
+    <framerate>30</framerate>
+    <width>320</width>
+    <height>240</height>
+    <debug>0</debug>
+    <!-- * -->
+    <rpi_cam_version>2</rpi_cam_version>
+    <still_compression>100</still_compression>
+    <!-- * -->
+    <max_stream_connections>5</max_stream_connections>
+    <max_stream_bitrate>256</max_stream_bitrate>
+    <max_stream_framerate>30</max_stream_framerate>
+    <max_stream_queue>1</max_stream_queue>
+</settings>

@@ -1,0 +1,9 @@
+ofxOMXCamera
+ofxXmlSettings
+ofxHTTP
+ofxIO
+ofxMediaType
+ofxNetworkUtils
+ofxPoco
+ofxSSLManager
+ofxJSON
