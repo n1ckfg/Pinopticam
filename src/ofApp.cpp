@@ -1,5 +1,8 @@
 #include "ofApp.h"
 
+using namespace cv;
+using namespace ofxCv;
+
 //--------------------------------------------------------------
 void ofApp::setup() {
     settings.loadFile("settings.xml");

@@ -1,4 +1,7 @@
-ofxOMXCamera
+ofxCv
+ofxCvPiCam
+ofxOpenCv
+ofxOsc
 ofxXmlSettings
 ofxHTTP
 ofxIO

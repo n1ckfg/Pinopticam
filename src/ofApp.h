@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofAppEGLWindow.h"
-#include "ofxOMXPhotoGrabber.h"
+#include "ofxCv.h"
+#include "ofxCvPiCam.h"
+#include "ofxOsc.h"
 #include "ofxXmlSettings.h"
 #include "ofxHTTP.h"
 #include "ofxJSONElement.h"
