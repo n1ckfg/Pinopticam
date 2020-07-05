@@ -6,14 +6,15 @@ using namespace ofxCv;
 //--------------------------------------------------------------
 void ofApp::setup() {
     settings.loadFile("settings.xml");
-
+    
     ofSetVerticalSync(false);
     ofHideCursor();
 
     framerate = settings.getValue("settings:framerate", 60);
+    ofSetFrameRate(framerate);
+
     width = settings.getValue("settings:width", 640);
     height = settings.getValue("settings:height", 480);
-    ofSetFrameRate(framerate);
 
     host = settings.getValue("settings:host", "127.0.0.1");
     postPort = settings.getValue("settings:post_port", 7110);
