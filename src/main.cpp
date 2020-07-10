@@ -3,23 +3,26 @@
 
 //========================================================================
 int main() {
-
+	
+	int w = 640;
+	int h = 480;
+	
+	// setup the GL context
 #ifdef TARGET_OPENGLES
 	ofGLESWindowSettings settings;
 	settings.glesVersion = 2;
-	settings.windowMode = OF_FULLSCREEN;
+	settings.setSize(w, h);
 	ofCreateWindow(settings);
 #else
         ofGLFWWindowSettings settings;
-        settings.glesVersion = 2;
-        settings.windowMode = OF_FULLSCREEN;
         settings.numSamples = 0;
-        ofCreateWindow(settings);                       // <-------- setup the GL context
+	settings.setSize(w, h);
+        ofCreateWindow(settings);                       
 #endif
 
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
-	ofRunApp(new ofApp());
+        // this kicks off the running of my app
+        // can be OF_WINDOW or OF_FULLSCREEN
+        // pass in width and height too:
+        ofRunApp( new ofApp());
 
 }

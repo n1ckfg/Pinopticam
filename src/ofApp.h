@@ -17,11 +17,11 @@ class ofApp : public ofBaseApp {
 	void update();
 	void draw();
 		
-	int width, height;
+	int width, height, appFramerate, camFramerate;
 	
-	string compname;
-	string host; // hostname;
-	int postPort, streamPort, wsPort;
+	string compname, host; // hostname;
+	string oscHost;
+	int oscPort, postPort, streamPort, wsPort;
 
 	bool debug; // draw to local screen, default true
 
@@ -30,9 +30,6 @@ class ofApp : public ofBaseApp {
 
 	ofFbo fbo;
 	ofPixels pixels;
-	ofShader shader;
-	bool doShader = false;
-	int framerate;
 	int rpiCamVersion = 0; // 0 for not an RPi cam, 1 for v1, 2 for v2
 	string lastPhotoTakenName;
 	int stillCompression;
@@ -58,17 +55,10 @@ class ofApp : public ofBaseApp {
 	void onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
 	void onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
 	void onWebSocketErrorEvent(ofxHTTP::WebSocketErrorEventArgs& evt);
+    
+	// ~ ~ ~ ~ ~ ~ ~     
 
-	bool slowVideoUpdate = false;
-	float slowVideoInterval = 0.33;
-
-	void updateStreamingVideo();
-	    
-	// ~ ~ ~ ~ ~ ~ ~ 
-	    
-	int oscPort; // default 7110;
-
-	bool video; // send video image, default false
+	bool oscVideo; // send video image, default false
 	bool brightestPixel; // send brightest pixel, default false
 	bool blobs;  // send blob tracking, default true
 	bool contours; // send contours, default false
@@ -80,7 +70,7 @@ class ofApp : public ofBaseApp {
 	ofxCvPiCam cam;
 	cv::Mat frame, frameProcessed;
 	ofImage gray;
-	int videoQuality; // 5 best to 1 worst, default 3 medium
+	int oscVideoQuality; // 5 best to 1 worst, default 3 medium
 	bool videoColor;
 
 	// for more camera settings, see:

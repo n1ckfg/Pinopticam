@@ -10,19 +10,22 @@ void ofApp::setup() {
     ofSetVerticalSync(false);
     ofHideCursor();
 
-    framerate = settings.getValue("settings:framerate", 60);
-    ofSetFrameRate(framerate);
+    appFramerate = settings.getValue("settings:app_framerate", 60);
+    camFramerate = settings.getValue("settings:cam_framerate", 30);
+    ofSetFrameRate(appFramerate);
 
-    videoQuality = settings.getValue("settings:video_quality", 3); 
+    oscVideoQuality = settings.getValue("settings:osc_video_quality", 3); 
     videoColor = (bool) settings.getValue("settings:video_color", 0); 
     
     width = settings.getValue("settings:width", 640);
     height = settings.getValue("settings:height", 480);
 
     host = settings.getValue("settings:host", "127.0.0.1");
-    postPort = settings.getValue("settings:post_port", 7110);
+    oscHost = settings.getValue("settings:osc_host", "127.0.0.1");
+    oscPort = settings.getValue("settings:osc_port", 7110);
     streamPort = settings.getValue("settings:stream_port", 7111);
     wsPort = settings.getValue("settings:ws_port", 7112);
+    postPort = settings.getValue("settings:post_port", 7113);
 
     debug = (bool) settings.getValue("settings:debug", 1);
     rpiCamVersion = settings.getValue("settings:rpi_cam_version", 1);
@@ -35,7 +38,7 @@ void ofApp::setup() {
         gray.allocate(width, height, OF_IMAGE_GRAYSCALE);        
     }
     
-    cam.setup(width, height, framerate, videoColor); // color/gray;
+    cam.setup(width, height, camFramerate, videoColor); // color/gray;
 
     camSharpness = settings.getValue("settings:sharpness", 0); 
     camContrast = settings.getValue("settings:contrast", 0); 
@@ -83,7 +86,6 @@ void ofApp::setup() {
     streamServer.setup(streamSettings);
     streamServer.start();
 
-    shader.load("shaders/es/invert");
     fbo.allocate(width, height, GL_RGBA);
     pixels.allocate(width, height, OF_IMAGE_COLOR);
 
@@ -109,39 +111,191 @@ void ofApp::setup() {
     wsServer.start();
 
     // events: connect, open, close, idle, message, broadcast
+    
+    thresholdValue = settings.getValue("settings:threshold", 127); 
+    
+    debug = (bool) settings.getValue("settings:debug", 1);
+    oscVideo = (bool) settings.getValue("settings:osc_video", 0); 
+    blobs = (bool) settings.getValue("settings:blobs", 1);
+    contours = (bool) settings.getValue("settings:contours", 0); 
+    contourSlices = settings.getValue("settings:contour_slices", 10); 
+    brightestPixel = (bool) settings.getValue("settings:brightest_pixel", 0); 
+
+    contourThreshold = 2.0;
+    contourMinAreaRadius = 1.0;
+    contourMaxAreaRadius = 250.0;
+
+    sender.setup(oscHost, oscPort);
+
+    contourFinder.setMinAreaRadius(contourMinAreaRadius);
+    contourFinder.setMaxAreaRadius(contourMaxAreaRadius);
+    //contourFinder.setInvert(true); // find black instead of white
+    trackingColorMode = TRACK_COLOR_RGB;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-    if (!slowVideoUpdate) {
-        updateStreamingVideo();
-    } else if (ofGetElapsedTimef() > slowVideoInterval) {
-        updateStreamingVideo();
-        ofResetElapsedTimeCounter();        
-    }
-}
-
-void ofApp::updateStreamingVideo() {
      frame = cam.grab();
 
     if (!frame.empty()) {
         toOf(frame, gray.getPixelsRef());
 
+        /*
         fbo.begin();
-        if (doShader) shader.begin();
         gray.draw(0,0);
-        if (doShader) shader.end();
         fbo.end();
+        
         fbo.readToPixels(pixels);
-        streamServer.send(pixels);
+        */
+        streamServer.send(gray.getPixels());
+        
+        if (oscVideo) {
+            switch(oscVideoQuality) {
+                case 5:
+                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_BEST);
+                    break;
+                case 4:
+                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_HIGH);
+                    break;
+                case 3:
+                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_MEDIUM);
+                    break;
+                case 2:
+                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_LOW);
+                    break;
+                case 1:
+                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_WORST);
+                    break;
+            }
+       	}
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+    ofBackground(0);
+
+    if(!frame.empty()) {
+        if (debug) {
+            if (!blobs && !contours) {
+                drawMat(frame, 0, 0);
+            } else if (blobs || contours) {
+                drawMat(frameProcessed, 0, 0);
+            }
+        }
+
+        if (oscVideo) {
+            sendOscVideo();
+        } 
+
+        if (blobs) {
+            if (debug) {
+            	ofSetLineWidth(2);
+            	ofNoFill();
+            }
+            
+            //autothreshold(frameProcessed);        
+            threshold(frame, frameProcessed, thresholdValue, 255, 0);
+            contourFinder.setThreshold(contourThreshold);    
+            contourFinder.findContours(frameProcessed);
+
+            int n = contourFinder.size();
+            for (int i = 0; i < n; i++) {
+                float circleRadius;
+                glm::vec2 circleCenter = toOf(contourFinder.getMinEnclosingCircle(i, circleRadius));
+                if (debug) {
+                	ofSetColor(cyanPrint);
+                	ofDrawCircle(circleCenter, circleRadius);
+                	ofDrawCircle(circleCenter, 1);
+                }
+
+                sendOscBlobs(i, circleCenter.x, circleCenter.y);
+            }
+        }
+
+        if (contours) {
+            if (debug) {
+                ofSetLineWidth(2);
+                ofNoFill();
+            }
+
+            int contourCounter = 0;
+            unsigned char * pixels = gray.getPixels().getData();
+            int gw = gray.getWidth();
+
+            for (int h=0; h<255; h += int(255/contourSlices)) {
+                contourFinder.setThreshold(h);
+                contourFinder.findContours(frame);
+                contourFinder.draw();            
+
+                int n = contourFinder.size();
+                for (int i = 0; i < n; i++) {
+                    ofPolyline line = contourFinder.getPolyline(i);
+                    vector<glm::vec3> cvPoints = line.getVertices();
+
+                    int x = int(cvPoints[0].x);
+                    int y = int(cvPoints[0].y);
+                    ofColor col = pixels[x + y * gw];
+                    float colorData[3]; 
+                    colorData[0] = col.r;
+                    colorData[1] = col.g;
+                    colorData[2] = col.b;
+                    char const * pColor = reinterpret_cast<char const *>(colorData);
+                    std::string colorString(pColor, pColor + sizeof colorData);
+                    contourColorBuffer.set(colorString); 
+
+                    float pointsData[cvPoints.size() * 2]; 
+                    for (int j=0; j<cvPoints.size(); j++) {
+                        int index = j * 2;
+                        pointsData[index] = cvPoints[j].x;
+                        pointsData[index+1] = cvPoints[j].y;
+                    }
+                    char const * pPoints = reinterpret_cast<char const *>(pointsData);
+                    std::string pointsString(pPoints, pPoints + sizeof pointsData);
+                    contourPointsBuffer.set(pointsString); 
+
+                    sendOscContours(contourCounter);
+                    contourCounter++;
+                }        
+            }
+        }
+           
+        if (brightestPixel) {
+        	// this mostly useful as a performance baseline
+            // https://openframeworks.cc/ofBook/chapters/image_processing_computer_vision.html
+            float maxBrightness = 0; 
+            float maxBrightnessX = 0; 
+            float maxBrightnessY = 0;
+            int skip = 2;
+
+            for (int y=0; y<height - skip; y += skip) {
+                for (int x=0; x<width - skip; x += skip) {
+                    ofColor colorAtXY = gray.getColor(x, y);
+                    float brightnessOfColorAtXY = colorAtXY.getBrightness();
+                    if (brightnessOfColorAtXY > maxBrightness && brightnessOfColorAtXY > thresholdValue) {
+                        maxBrightness = brightnessOfColorAtXY;
+                        maxBrightnessX = x;
+                        maxBrightnessY = y;
+                    }
+                }
+            }
+
+            if (debug) {
+            	ofNoFill();
+            	glm::vec2 circleCenter = glm::vec2(maxBrightnessX, maxBrightnessY);
+            	ofDrawCircle(circleCenter, 40);
+            }
+
+            sendOscPixel(maxBrightnessX, maxBrightnessY);
+        }
+    }
+
     if (debug) {
-        drawMat(frame, 0, 0);
-    } 
+        stringstream info;
+        info << "FPS: " << ofGetFrameRate() << "\n";
+        //info << "Camera Resolution: " << cam.width << "x" << cam.height << " @ "<< "xx" <<"FPS"<< "\n";
+        ofDrawBitmapStringHighlight(info.str(), 10, 10, ofColor::black, ofColor::yellow);
+    }
 }
 
 // ~ ~ ~ CAM ~ ~ ~
@@ -209,10 +363,6 @@ void ofApp::onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt)
 
     if (msg == "take_photo") {
         beginTakePhoto();
-    } else if (msg == "update_slow") {
-        slowVideoUpdate = true;
-    } else if (msg == "update_fast") {
-        slowVideoUpdate = false;
     }
     /*
     ofxJSONElement json;
@@ -278,13 +428,56 @@ void ofApp::createResultHtml(string fileName) {
 void ofApp::beginTakePhoto() {
     //cam.takePhoto();
     createResultHtml("none");
-    doShader = true;
 }
 
 void ofApp::endTakePhoto(string fileName) {
     createResultHtml(fileName);
-    doShader = false;
 
     string msg = host + "," + lastPhotoTakenName;
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+}
+
+void ofApp::sendOscVideo() {
+    ofxOscMessage m;
+    m.setAddress("/video");
+    m.addStringArg(compname);    
+    
+    m.addBlobArg(videoBuffer);
+    
+    sender.sendMessage(m);
+}
+
+void ofApp::sendOscBlobs(int index, float x, float y) {
+    ofxOscMessage m;
+    m.setAddress("/blob");
+    m.addStringArg(compname);
+    
+    m.addIntArg(index);
+    m.addFloatArg(x / (float) width);
+    m.addFloatArg(y / (float) height);
+
+    sender.sendMessage(m);
+}
+
+void ofApp::sendOscContours(int index) {
+    ofxOscMessage m;
+    m.setAddress("/contour");
+    m.addStringArg(compname);
+    
+    m.addIntArg(index);
+    m.addBlobArg(contourColorBuffer);
+    m.addBlobArg(contourPointsBuffer);
+
+    sender.sendMessage(m);
+}
+
+void ofApp::sendOscPixel(float x, float y) {
+    ofxOscMessage m;
+    m.setAddress("/pixel");
+    m.addStringArg(compname);
+    
+    m.addFloatArg(x / (float) width);
+    m.addFloatArg(y / (float) height);
+
+    sender.sendMessage(m);
 }
