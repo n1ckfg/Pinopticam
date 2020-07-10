@@ -13,6 +13,9 @@ void ofApp::setup() {
     framerate = settings.getValue("settings:framerate", 60);
     ofSetFrameRate(framerate);
 
+    videoQuality = settings.getValue("settings:video_quality", 3); 
+    videoColor = (bool) settings.getValue("settings:video_color", 0); 
+    
     width = settings.getValue("settings:width", 640);
     height = settings.getValue("settings:height", 480);
 
@@ -25,6 +28,32 @@ void ofApp::setup() {
     rpiCamVersion = settings.getValue("settings:rpi_cam_version", 1);
     stillCompression = settings.getValue("settings:still_compression", 100);
 
+    // camera
+    if (videoColor) {
+        gray.allocate(width, height, OF_IMAGE_COLOR);
+    } else {
+        gray.allocate(width, height, OF_IMAGE_GRAYSCALE);        
+    }
+    
+    cam.setup(width, height, framerate, videoColor); // color/gray;
+
+    camSharpness = settings.getValue("settings:sharpness", 0); 
+    camContrast = settings.getValue("settings:contrast", 0); 
+    camBrightness = settings.getValue("settings:brightness", 50); 
+    camIso = settings.getValue("settings:iso", 300); 
+    camExposureMode = settings.getValue("settings:exposure_mode", 0); 
+    camExposureCompensation = settings.getValue("settings:exposure_compensation", 0); 
+    camShutterSpeed = settings.getValue("settings:shutter_speed", 0);
+
+    cam.setSharpness(camSharpness);
+    cam.setContrast(camContrast);
+    cam.setBrightness(camBrightness);
+    cam.setISO(camIso);
+    cam.setExposureMode((MMAL_PARAM_EXPOSUREMODE_T) camExposureMode);
+    cam.setExposureCompensation(camExposureCompensation);
+    cam.setShutterSpeed(camShutterSpeed);
+    //cam.setFrameRate // not implemented in ofxCvPiCam
+    
     // ~ ~ ~   get a persistent name for this computer   ~ ~ ~
     compname = "RPi";
     file.open(ofToDataPath("compname.txt"), ofFile::ReadWrite, false);
@@ -39,46 +68,7 @@ void ofApp::setup() {
         buff.set(compname.c_str(), compname.size());
         ofBufferToFile("compname.txt", buff);
     }
-
-    // * camera *
-    ofFile settingsFile("settings.json");
-    if (settingsFile.exists()) {
-        ofBuffer jsonBuffer = ofBufferFromFile("settings.json");
-        camSettings.parseJSON(jsonBuffer.getText());
-    } else {
-        camSettings.sensorWidth = 2592;
-        camSettings.sensorHeight = 1944;       
-        camSettings.stillPreviewWidth = width;
-        camSettings.stillPreviewHeight = height;        
-        camSettings.saturation = -100;
-        camSettings.sharpness = 100;
-        camSettings.brightness = 50;
-        camSettings.stillQuality = 100;
-        camSettings.enableStillPreview = true;
-        camSettings.burstModeEnabled = true;
-        camSettings.saveJSONFile();   
-    }
-    
-    // ~ override settings ~
-    // https://github.com/jvcleave/ofxOMXCamera/blob/master/src/ofxOMXCameraSettings.h
-    camSettings.stillPreviewWidth = width;
-    camSettings.stillPreviewHeight = height;
-    if (rpiCamVersion == 1) {
-        camSettings.sensorWidth = 2592;
-        camSettings.sensorHeight = 1944;  
-    } else if (rpiCamVersion == 2) {
-        camSettings.sensorWidth = 3280;
-        camSettings.sensorHeight = 2464;  
-    }
-    camSettings.stillQuality = stillCompression;
-    //camSettings.enablePixels = true;
-    camSettings.enableTexture = true;
-    camSettings.autoISO = false;
-    camSettings.autoShutter = false;
-    camSettings.savedPhotosFolderName = "DocumentRoot/photos"; // default "photos"
-    camSettings.photoGrabberListener = this; //not saved in JSON file
-    cam.setup(camSettings);
-    
+   
     // * stream video *
     // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/IPVideoRoute.h
     // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/IPVideoRoute.cpp
@@ -132,10 +122,14 @@ void ofApp::update() {
 }
 
 void ofApp::updateStreamingVideo() {
-    if (cam.isFrameNew() && cam.isTextureEnabled()) {
+     frame = cam.grab();
+
+    if (!frame.empty()) {
+        toOf(frame, gray.getPixelsRef());
+
         fbo.begin();
         if (doShader) shader.begin();
-        cam.draw(0,0);
+        gray.draw(0,0);
         if (doShader) shader.end();
         fbo.end();
         fbo.readToPixels(pixels);
@@ -145,17 +139,17 @@ void ofApp::updateStreamingVideo() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-    if (debug && cam.isTextureEnabled()) {
-        fbo.draw(0, 0);
+    if (debug) {
+        drawMat(frame, 0, 0);
     } 
 }
 
 // ~ ~ ~ CAM ~ ~ ~
-void ofApp::onTakePhotoComplete(string fileName) {
-    ofLog() << "onTakePhotoComplete fileName: " << fileName;  
+//void ofApp::onTakePhotoComplete(string fileName) {
+    //ofLog() << "onTakePhotoComplete fileName: " << fileName;  
 
-    endTakePhoto(fileName);
-}
+    //endTakePhoto(fileName);
+//}
 
 // ~ ~ ~ POST ~ ~ ~
 void ofApp::onHTTPPostEvent(ofxHTTP::PostEventArgs& args) {
@@ -282,7 +276,7 @@ void ofApp::createResultHtml(string fileName) {
 }
 
 void ofApp::beginTakePhoto() {
-    cam.takePhoto();
+    //cam.takePhoto();
     createResultHtml("none");
     doShader = true;
 }

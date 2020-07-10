@@ -10,7 +10,7 @@
 
 #define NUM_MESSAGES 30 // how many past ws messages we want to keep
 
-class ofApp : public ofBaseApp, public ofxOMXPhotoGrabberListener {
+class ofApp : public ofBaseApp {
 
     public:	
 	void setup();
@@ -51,7 +51,7 @@ class ofApp : public ofBaseApp, public ofxOMXPhotoGrabberListener {
 	void onHTTPFormEvent(ofxHTTP::PostFormEventArgs& evt);
 	void onHTTPUploadEvent(ofxHTTP::PostUploadEventArgs& evt);
         
-        ofxHTTP::SimpleWebSocketServer wsServer;  
+    ofxHTTP::SimpleWebSocketServer wsServer;  
 	ofxHTTP::SimpleWebSocketServerSettings wsSettings;
 	void onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt);
 	void onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt);
@@ -86,10 +86,10 @@ class ofApp : public ofBaseApp, public ofxOMXPhotoGrabberListener {
 	// for more camera settings, see:
 	// https://github.com/orgicus/ofxCvPiCam/blob/master/example-ofxCvPiCam-allSettings/src/testApp.cpp
 
-        int camShutterSpeed; // 0 to 330000 in microseconds, default 0
-    	int camSharpness; // -100 to 100, default 0
-    	int camContrast; // -100 to 100, default 0
-    	int camBrightness; // 0 to 100, default 50
+    int camShutterSpeed; // 0 to 330000 in microseconds, default 0
+    int camSharpness; // -100 to 100, default 0
+    int camContrast; // -100 to 100, default 0
+    int camBrightness; // 0 to 100, default 50
 	int camIso; // 100 to 800, default 300
 	int camExposureCompensation; // -10 to 10, default 0;
 
@@ -97,7 +97,6 @@ class ofApp : public ofBaseApp, public ofxOMXPhotoGrabberListener {
 	int camExposureMode; // 0 to 13, default 0
 
 	//string oscAddress;
-	int framerate;
 	int thresholdValue; // default 127
 	int thresholdKeyCounter;
 	bool thresholdKeyFast;

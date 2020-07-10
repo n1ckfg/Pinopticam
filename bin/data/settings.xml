@@ -4,13 +4,30 @@
     <post_port>7110</post_port>
     <stream_port>7111</stream_port>
     <ws_port>7112</ws_port>
+    <!-- * -->
     <framerate>30</framerate>
-    <width>320</width>
-    <height>240</height>
-    <debug>0</debug>
+    <width>640</width>
+    <height>480</height>
+    <debug>1</debug>
     <!-- * -->
     <rpi_cam_version>2</rpi_cam_version>
     <still_compression>100</still_compression>
+    <brightest_pixel>0</brightest_pixel>
+    <blobs>0</blobs>
+    <contours>1</contours>
+    <video>0</video>
+    <!-- * -->
+    <video_quality>3</video_quality>
+    <video_color>0</video_color>
+    <contour_slices>10</contour_slices>
+    <threshold>30</threshold>
+    <sharpness>50</sharpness>
+	<contrast>0</contrast>
+	<brightness>50</brightness>
+	<iso>800</iso>
+	<exposure_mode>0</exposure_mode>
+    <exposure_compensation>0</exposure_compensation>
+	<shutter_speed>100000</shutter_speed>
     <!-- * -->
     <max_stream_connections>5</max_stream_connections>
     <max_stream_bitrate>256</max_stream_bitrate>
