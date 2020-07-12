@@ -4,7 +4,6 @@
     <osc_port>7110</osc_port>
     <stream_port>7111</stream_port>
     <ws_port>7112</ws_port>
-    <post_port>7113</post_port>
     <!-- * -->
     <app_framerate>60</app_framerate>
     <cam_framerate>40</cam_framerate>

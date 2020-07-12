@@ -25,7 +25,6 @@ void ofApp::setup() {
     oscPort = settings.getValue("settings:osc_port", 7110);
     streamPort = settings.getValue("settings:stream_port", 7111);
     wsPort = settings.getValue("settings:ws_port", 7112);
-    postPort = settings.getValue("settings:post_port", 7113);
 
     debug = (bool) settings.getValue("settings:debug", 1);
     rpiCamVersion = settings.getValue("settings:rpi_cam_version", 1);
