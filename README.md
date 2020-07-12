@@ -6,7 +6,6 @@
 * Brightest pixel
 
 ## Streaming functions:
-* OSC
-* Websockets
-* Http server
-* Mjpeg stream
+* OSC (default port 7110)
+* Mjpeg stream (default port 7111)
+* Websockets (default port 7112)
