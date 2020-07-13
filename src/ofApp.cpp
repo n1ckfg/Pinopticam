@@ -19,6 +19,7 @@ void ofApp::setup() {
     
     width = settings.getValue("settings:width", 640);
     height = settings.getValue("settings:height", 480);
+    ofSetWindowShape(width, height);
 
     host = settings.getValue("settings:host", "127.0.0.1");
     oscHost = settings.getValue("settings:osc_host", "127.0.0.1");
