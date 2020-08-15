@@ -26,6 +26,7 @@ void ofApp::setup() {
     oscPort = settings.getValue("settings:osc_port", 7110);
     streamPort = settings.getValue("settings:stream_port", 7111);
     wsPort = settings.getValue("settings:ws_port", 7112);
+    postPort = settings.getValue("settings:post_port", 7113);
 
     debug = (bool) settings.getValue("settings:debug", 1);
     rpiCamVersion = settings.getValue("settings:rpi_cam_version", 1);
@@ -89,6 +90,15 @@ void ofApp::setup() {
     fbo.allocate(width, height, GL_RGBA);
     pixels.allocate(width, height, OF_IMAGE_COLOR);
 
+    // * post form *
+    // https://bakercp.github.io/ofxHTTP/classofx_1_1_h_t_t_p_1_1_simple_post_server_settings.html
+    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/PostRoute.cpp
+    postSettings.setPort(postPort);
+    postSettings.postRouteSettings.setUploadRedirect("result.html");
+    postServer.setup(postSettings);
+    postServer.postRoute().registerPostEvents(this);
+    postServer.start();
+    
     ofSystem("cp /etc/hostname " + ofToDataPath("DocumentRoot/js/"));
     host = ofSystem("cat /etc/hostname");
     host.pop_back(); // last char is \n
@@ -290,11 +300,51 @@ void ofApp::draw() {
 }
 
 // ~ ~ ~ CAM ~ ~ ~
-//void ofApp::onTakePhotoComplete(string fileName) {
-    //ofLog() << "onTakePhotoComplete fileName: " << fileName;  
+void ofApp::onTakePhotoComplete(string fileName) {
+    ofLog() << "onTakePhotoComplete fileName: " << fileName;  
 
-    //endTakePhoto(fileName);
-//}
+    endTakePhoto(fileName);
+}
+
+// ~ ~ ~ POST ~ ~ ~
+void ofApp::onHTTPPostEvent(ofxHTTP::PostEventArgs& args) {
+    ofLogNotice("ofApp::onHTTPPostEvent") << "Data: " << args.getBuffer().getText();
+
+    beginTakePhoto();
+}
+
+
+void ofApp::onHTTPFormEvent(ofxHTTP::PostFormEventArgs& args) {
+    ofLogNotice("ofApp::onHTTPFormEvent") << "";
+    ofxHTTP::HTTPUtils::dumpNameValueCollection(args.getForm(), ofGetLogLevel());
+    
+    beginTakePhoto();
+}
+
+
+void ofApp::onHTTPUploadEvent(ofxHTTP::PostUploadEventArgs& args) {
+    std::string stateString = "";
+
+    switch (args.getState()) {
+        case ofxHTTP::PostUploadEventArgs::UPLOAD_STARTING:
+            stateString = "STARTING";
+            break;
+        case ofxHTTP::PostUploadEventArgs::UPLOAD_PROGRESS:
+            stateString = "PROGRESS";
+            break;
+        case ofxHTTP::PostUploadEventArgs::UPLOAD_FINISHED:
+            stateString = "FINISHED";
+            break;
+    }
+
+    ofLogNotice("ofApp::onHTTPUploadEvent") << "";
+    ofLogNotice("ofApp::onHTTPUploadEvent") << "         state: " << stateString;
+    ofLogNotice("ofApp::onHTTPUploadEvent") << " formFieldName: " << args.getFormFieldName();
+    ofLogNotice("ofApp::onHTTPUploadEvent") << "orig. filename: " << args.getOriginalFilename();
+    ofLogNotice("ofApp::onHTTPUploadEvent") <<  "     filename: " << args.getFilename();
+    ofLogNotice("ofApp::onHTTPUploadEvent") <<  "     fileType: " << args.getFileType().toString();
+    ofLogNotice("ofApp::onHTTPUploadEvent") << "# bytes xfer'd: " << args.getNumBytesTransferred();
+}
 
 // ~ ~ ~ WEBSOCKETS ~ ~ ~
 void ofApp::onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt) {
@@ -388,6 +438,7 @@ void ofApp::endTakePhoto(string fileName) {
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 
+// ~ ~ ~ OSC ~ ~ ~
 void ofApp::sendOscVideo() {
     ofxOscMessage m;
     m.setAddress("/video");

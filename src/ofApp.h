@@ -21,7 +21,7 @@ class ofApp : public ofBaseApp {
 	
 	string compname, host; // hostname;
 	string oscHost;
-	int oscPort, streamPort, wsPort;
+	int oscPort, streamPort, wsPort, postPort;
 
 	bool debug; // draw to local screen, default true
 
@@ -41,7 +41,15 @@ class ofApp : public ofBaseApp {
 	ofxHTTP::SimpleIPVideoServer streamServer;
 	ofxHTTP::SimpleIPVideoServerSettings streamSettings;
 	vector<string> photoFiles;
-       
+
+	void onTakePhotoComplete(string fileName);
+	void onPhotoGrabberEngineStart();
+	ofxHTTP::SimplePostServer postServer;
+	ofxHTTP::SimplePostServerSettings postSettings;
+	void onHTTPPostEvent(ofxHTTP::PostEventArgs& evt);
+	void onHTTPFormEvent(ofxHTTP::PostFormEventArgs& evt);
+	void onHTTPUploadEvent(ofxHTTP::PostUploadEventArgs& evt);
+	    	       
     ofxHTTP::SimpleWebSocketServer wsServer;  
 	ofxHTTP::SimpleWebSocketServerSettings wsSettings;
 	void onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt);
