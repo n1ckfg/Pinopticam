@@ -36,14 +36,14 @@ class ofApp : public ofBaseApp {
 
 	void createResultHtml(string fileName);
 	void beginTakePhoto();
-	void endTakePhoto(string fileName);
+	//void endTakePhoto(string fileName);
 
 	ofxHTTP::SimpleIPVideoServer streamServer;
 	ofxHTTP::SimpleIPVideoServerSettings streamSettings;
 	vector<string> photoFiles;
 
-	void onTakePhotoComplete(string fileName);
-	void onPhotoGrabberEngineStart();
+	//void onTakePhotoComplete(string fileName);
+	//void onPhotoGrabberEngineStart();
 	ofxHTTP::SimplePostServer postServer;
 	ofxHTTP::SimplePostServerSettings postSettings;
 	void onHTTPPostEvent(ofxHTTP::PostEventArgs& evt);

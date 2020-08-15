@@ -300,11 +300,13 @@ void ofApp::draw() {
 }
 
 // ~ ~ ~ CAM ~ ~ ~
-void ofApp::onTakePhotoComplete(string fileName) {
+/*
+ void ofApp::onTakePhotoComplete(string fileName) {
     ofLog() << "onTakePhotoComplete fileName: " << fileName;  
 
     endTakePhoto(fileName);
 }
+*/
 
 // ~ ~ ~ POST ~ ~ ~
 void ofApp::onHTTPPostEvent(ofxHTTP::PostEventArgs& args) {
@@ -427,12 +429,13 @@ void ofApp::createResultHtml(string fileName) {
 }
 
 void ofApp::beginTakePhoto() {
-    //cam.takePhoto();
-    createResultHtml("none");
-}
-
-void ofApp::endTakePhoto(string fileName) {
-    createResultHtml(fileName);
+    string fileName = "test.jpg";
+    gray.save(ofToDataPath("DocumentRoot/photos/"+fileName));
+    createResultHtml(fileName);//"none");
+//}
+//
+//void ofApp::endTakePhoto(string fileName) {
+    //createResultHtml(fileName);
 
     string msg = host + "," + lastPhotoTakenName;
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
