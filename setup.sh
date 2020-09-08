@@ -1,5 +1,3 @@
-sudo timedatectl set-ntp true
-
 # https://github.com/Azure/azure-iot-sdk-c/issues/265
 
 DIR=$PWD
