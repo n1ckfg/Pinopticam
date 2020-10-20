@@ -30,10 +30,11 @@ class ofApp : public ofBaseApp {
 
 	ofFbo fbo;
 	ofPixels pixels;
-	int rpiCamVersion = 0; // 0 for not an RPi cam, 1 for v1, 2 for v2
+	int rpiCamVersion; // 0 for not an RPi cam, 1 for v1, 2 for v2
 	string lastPhotoTakenName;
 	int stillCompression;
-
+	int timestamp;
+	
 	void createResultHtml(string fileName);
 	void beginTakePhoto();
 	//void endTakePhoto(string fileName);
@@ -60,8 +61,12 @@ class ofApp : public ofBaseApp {
     
 	// ~ ~ ~ ~ ~ ~ ~     
 
-	bool oscVideo; // send video image, default false
-	bool brightestPixel; // send brightest pixel, default false
+	bool sendOsc;  // send osc, default true
+	bool sendWs;  // send websockets, default true
+	bool sendHttp;  // serve web control panel, default true
+	bool sendMjpeg;  // send mjpeg stream, default true	
+	bool oscVideo;  // send video image over osc, default false
+	bool brightestPixel;  // send brightest pixel, default false
 	bool blobs;  // send blob tracking, default true
 	bool contours; // send contours, default false
 
@@ -92,13 +97,15 @@ class ofApp : public ofBaseApp {
 	int thresholdValue; // default 127
 	int thresholdKeyCounter;
 	bool thresholdKeyFast;
-	//bool doDrawInfo;
 
 	ofxOscSender sender;
 	void sendOscVideo();
 	void sendOscBlobs(int index, float x, float y);
 	void sendOscContours(int index);
 	void sendOscPixel(float x, float y);
+	void sendWsBlobs(int index, float x, float y);
+	void sendWsContours(int index);
+	void sendWsPixel(float x, float y);
 
 	ofxCv::ContourFinder contourFinder;
 	float contourThreshold;  // default 127
@@ -106,6 +113,5 @@ class ofApp : public ofBaseApp {
 	float contourMaxAreaRadius; // default 150
 	int contourSlices; // default 20
 	ofxCv::TrackingColorMode trackingColorMode; // RGB, HSV, H, HS; default RGB
-	//ofColor targetColor; 
 
 };

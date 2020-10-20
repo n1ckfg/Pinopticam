@@ -21,6 +21,19 @@ void ofApp::setup() {
     height = settings.getValue("settings:height", 480);
     ofSetWindowShape(width, height);
 
+    debug = (bool) settings.getValue("settings:debug", 1);
+
+    sendOsc = (bool) settings.getValue("settings:send_osc", 1); 
+    sendWs = (bool) settings.getValue("settings:send_ws", 1); 
+    sendHttp = (bool) settings.getValue("settings:send_http", 1); 
+    sendMjpeg = (bool) settings.getValue("settings:send_mjpeg", 1); 
+    oscVideo = (bool) settings.getValue("settings:osc_video", 0); 
+
+    blobs = (bool) settings.getValue("settings:blobs", 1);
+    contours = (bool) settings.getValue("settings:contours", 0); 
+    contourSlices = settings.getValue("settings:contour_slices", 10); 
+    brightestPixel = (bool) settings.getValue("settings:brightest_pixel", 0); 
+
     host = settings.getValue("settings:host", "127.0.0.1");
     oscHost = settings.getValue("settings:osc_host", "127.0.0.1");
     oscPort = settings.getValue("settings:osc_port", 7110);
@@ -59,6 +72,7 @@ void ofApp::setup() {
     //cam.setFrameRate // not implemented in ofxCvPiCam
     
     // ~ ~ ~   get a persistent name for this computer   ~ ~ ~
+    // randomly generated id
     compname = "RPi";
     file.open(ofToDataPath("compname.txt"), ofFile::ReadWrite, false);
     ofBuffer buff;
@@ -73,81 +87,75 @@ void ofApp::setup() {
         ofBufferToFile("compname.txt", buff);
     }
    
-    // * stream video *
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/IPVideoRoute.h
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/IPVideoRoute.cpp
-    streamSettings.setPort(streamPort);
-    streamSettings.ipVideoRouteSettings.setMaxClientConnections(settings.getValue("settings:max_stream_connections", 5)); // default 5
-    streamSettings.ipVideoRouteSettings.setMaxClientBitRate(settings.getValue("settings:max_stream_bitrate", 512)); // default 1024
-    streamSettings.ipVideoRouteSettings.setMaxClientFrameRate(settings.getValue("settings:max_stream_framerate", 30)); // default 30
-    streamSettings.ipVideoRouteSettings.setMaxClientQueueSize(settings.getValue("settings:max_stream_queue", 10)); // default 10
-    streamSettings.ipVideoRouteSettings.setMaxStreamWidth(width); // default 1920
-    streamSettings.ipVideoRouteSettings.setMaxStreamHeight(height); // default 1080
-    streamSettings.fileSystemRouteSettings.setDefaultIndex("live_view.html");
-    streamServer.setup(streamSettings);
-    streamServer.start();
-
-    fbo.allocate(width, height, GL_RGBA);
-    pixels.allocate(width, height, OF_IMAGE_COLOR);
-
-    // * post form *
-    // https://bakercp.github.io/ofxHTTP/classofx_1_1_h_t_t_p_1_1_simple_post_server_settings.html
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/PostRoute.cpp
-    postSettings.setPort(postPort);
-    postSettings.postRouteSettings.setUploadRedirect("result.html");
-    postServer.setup(postSettings);
-    postServer.postRoute().registerPostEvents(this);
-    postServer.start();
-    
+    // actual hostname
     ofSystem("cp /etc/hostname " + ofToDataPath("DocumentRoot/js/"));
     host = ofSystem("cat /etc/hostname");
     host.pop_back(); // last char is \n
-
-    // * websockets *
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/WebSocketConnection.h
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/WebSocketConnection.cpp
-    wsSettings.setPort(wsPort);
-    wsServer.setup(wsSettings);
-    wsServer.webSocketRoute().registerWebSocketEvents(this);
-    wsServer.start();
-
-    // events: connect, open, close, idle, message, broadcast
     
+    fbo.allocate(width, height, GL_RGBA);
+    pixels.allocate(width, height, OF_IMAGE_COLOR);
+        
     thresholdValue = settings.getValue("settings:threshold", 127); 
-    
-    debug = (bool) settings.getValue("settings:debug", 1);
-    oscVideo = (bool) settings.getValue("settings:osc_video", 0); 
-    blobs = (bool) settings.getValue("settings:blobs", 1);
-    contours = (bool) settings.getValue("settings:contours", 0); 
-    contourSlices = settings.getValue("settings:contour_slices", 10); 
-    brightestPixel = (bool) settings.getValue("settings:brightest_pixel", 0); 
-
     contourThreshold = 2.0;
     contourMinAreaRadius = 1.0;
-    contourMaxAreaRadius = 250.0;
-
-    sender.setup(oscHost, oscPort);
-
+    contourMaxAreaRadius = 250.0;   
     contourFinder.setMinAreaRadius(contourMinAreaRadius);
     contourFinder.setMaxAreaRadius(contourMaxAreaRadius);
     //contourFinder.setInvert(true); // find black instead of white
     trackingColorMode = TRACK_COLOR_RGB;
+
+    if (sendMjpeg) {
+        // * stream video *
+        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/IPVideoRoute.h
+        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/IPVideoRoute.cpp
+        streamSettings.setPort(streamPort);
+        streamSettings.ipVideoRouteSettings.setMaxClientConnections(settings.getValue("settings:max_stream_connections", 5)); // default 5
+        streamSettings.ipVideoRouteSettings.setMaxClientBitRate(settings.getValue("settings:max_stream_bitrate", 512)); // default 1024
+        streamSettings.ipVideoRouteSettings.setMaxClientFrameRate(settings.getValue("settings:max_stream_framerate", 30)); // default 30
+        streamSettings.ipVideoRouteSettings.setMaxClientQueueSize(settings.getValue("settings:max_stream_queue", 10)); // default 10
+        streamSettings.ipVideoRouteSettings.setMaxStreamWidth(width); // default 1920
+        streamSettings.ipVideoRouteSettings.setMaxStreamHeight(height); // default 1080
+        streamSettings.fileSystemRouteSettings.setDefaultIndex("live_view.html");
+        streamServer.setup(streamSettings);
+        streamServer.start();
+    }
+
+    if (sendHttp) {
+        // * post form *
+        // https://bakercp.github.io/ofxHTTP/classofx_1_1_h_t_t_p_1_1_simple_post_server_settings.html
+        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/PostRoute.cpp
+        postSettings.setPort(postPort);
+        postSettings.postRouteSettings.setUploadRedirect("result.html");
+        postServer.setup(postSettings);
+        postServer.postRoute().registerPostEvents(this);
+        postServer.start();
+    }
+        
+    if (sendWs) {
+        // * websockets *
+        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/WebSocketConnection.h
+        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/WebSocketConnection.cpp
+        // events: connect, open, close, idle, message, broadcast
+        wsSettings.setPort(wsPort);
+        wsServer.setup(wsSettings);
+        wsServer.webSocketRoute().registerWebSocketEvents(this);
+        wsServer.start();
+    }
+    
+    if (sendOsc) {
+        sender.setup(oscHost, oscPort);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-     frame = cam.grab();
+    timestamp = (int) ofGetSystemTimeMillis();
+    
+    frame = cam.grab();
 
     if (!frame.empty()) {
         toOf(frame, gray.getPixelsRef());
 
-        /*
-        fbo.begin();
-        gray.draw(0,0);
-        fbo.end();
-        
-        fbo.readToPixels(pixels);
-        */
         streamServer.send(gray.getPixels());
         
         if (oscVideo) {
@@ -210,7 +218,8 @@ void ofApp::draw() {
                 	ofDrawCircle(circleCenter, 1);
                 }
 
-                sendOscBlobs(i, circleCenter.x, circleCenter.y);
+                if (sendOsc) sendOscBlobs(i, circleCenter.x, circleCenter.y);
+                if (sendWs) sendWsBlobs(i, circleCenter.x, circleCenter.y);
             }
         }
 
@@ -255,7 +264,8 @@ void ofApp::draw() {
                     std::string pointsString(pPoints, pPoints + sizeof pointsData);
                     contourPointsBuffer.set(pointsString); 
 
-                    sendOscContours(contourCounter);
+                    if (sendOsc) sendOscContours(contourCounter);
+                    if (sendWs) sendWsContours(contourCounter);
                     contourCounter++;
                 }        
             }
@@ -287,14 +297,14 @@ void ofApp::draw() {
             	ofDrawCircle(circleCenter, 40);
             }
 
-            sendOscPixel(maxBrightnessX, maxBrightnessY);
+            if (sendOsc) sendOscPixel(maxBrightnessX, maxBrightnessY);
+            if (sendWs) sendWsPixel(maxBrightnessX, maxBrightnessY);
         }
     }
 
     if (debug) {
         stringstream info;
-        info << "FPS: " << ofGetFrameRate() << "\n";
-        //info << "Camera Resolution: " << cam.width << "x" << cam.height << " @ "<< "xx" <<"FPS"<< "\n";
+        info << cam.width << "x" << cam.height << " @ "<< ofGetFrameRate() <<"fps"<< "\n";
         ofDrawBitmapStringHighlight(info.str(), 10, 10, ofColor::black, ofColor::yellow);
     }
 }
@@ -445,9 +455,10 @@ void ofApp::beginTakePhoto() {
 void ofApp::sendOscVideo() {
     ofxOscMessage m;
     m.setAddress("/video");
-    m.addStringArg(compname);    
     
+    m.addStringArg(compname);    
     m.addBlobArg(videoBuffer);
+    m.addIntArg(timestamp);
     
     sender.sendMessage(m);
 }
@@ -455,11 +466,12 @@ void ofApp::sendOscVideo() {
 void ofApp::sendOscBlobs(int index, float x, float y) {
     ofxOscMessage m;
     m.setAddress("/blob");
-    m.addStringArg(compname);
     
-    m.addIntArg(index);
+    m.addStringArg(compname);
+    m.addIntArg(index);  
     m.addFloatArg(x / (float) width);
     m.addFloatArg(y / (float) height);
+    m.addIntArg(timestamp);
 
     sender.sendMessage(m);
 }
@@ -467,11 +479,12 @@ void ofApp::sendOscBlobs(int index, float x, float y) {
 void ofApp::sendOscContours(int index) {
     ofxOscMessage m;
     m.setAddress("/contour");
-    m.addStringArg(compname);
     
+    m.addStringArg(compname);
     m.addIntArg(index);
     m.addBlobArg(contourColorBuffer);
     m.addBlobArg(contourPointsBuffer);
+    m.addIntArg(timestamp);
 
     sender.sendMessage(m);
 }
@@ -479,10 +492,32 @@ void ofApp::sendOscContours(int index) {
 void ofApp::sendOscPixel(float x, float y) {
     ofxOscMessage m;
     m.setAddress("/pixel");
-    m.addStringArg(compname);
     
+    m.addStringArg(compname);   
     m.addFloatArg(x / (float) width);
     m.addFloatArg(y / (float) height);
-
+    m.addIntArg(timestamp);
+    
     sender.sendMessage(m);
+}
+
+void ofApp::sendWsBlobs(int index, float x, float y) {   
+    float xPos = x / (float) width;
+    float yPos = y / (float) height;
+    
+    string msg = "{\"compname\":" + compname + ",\"index\":" + ofToString(index) + ",\"x\":" + ofToString(xPos) + ",\"y\":" + ofToString(yPos) + ",\"timestamp\":" + ofToString(timestamp) + "}";
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+}
+
+void ofApp::sendWsContours(int index) {
+    string msg = "{\"compname\":" + compname + ",\"index\":" + ofToString(index) + ",\"x\":" + ofToString(contourColorBuffer) + ",\"y\":" + ofToString(contourPointsBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+}
+
+void ofApp::sendWsPixel(float x, float y) {   
+    float xPos = x / (float) width;
+    float yPos = y / (float) height;
+
+    string msg = "{\"compname\":" + compname + ",\"x\":" + ofToString(xPos) + ",\"y\":" + ofToString(yPos) + ",\"timestamp\":" + ofToString(timestamp) + "}";
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
