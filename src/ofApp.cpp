@@ -27,8 +27,8 @@ void ofApp::setup() {
     sendWs = (bool) settings.getValue("settings:send_ws", 1); 
     sendHttp = (bool) settings.getValue("settings:send_http", 1); 
     sendMjpeg = (bool) settings.getValue("settings:send_mjpeg", 1); 
-    syncVideo = (bool) settings.getValue("settings:osc_video", 0); 
-
+    
+    syncVideo = (bool) settings.getValue("settings:sync_video", 0); 
     blobs = (bool) settings.getValue("settings:blobs", 1);
     contours = (bool) settings.getValue("settings:contours", 0); 
     contourSlices = settings.getValue("settings:contour_slices", 10); 
@@ -117,6 +117,7 @@ void ofApp::setup() {
         streamSettings.fileSystemRouteSettings.setDefaultIndex("live_view.html");
         streamServer.setup(streamSettings);
         streamServer.start();
+        cout << "Using MJPEG stream." << endl;
     }
 
     if (sendHttp) {
@@ -128,6 +129,7 @@ void ofApp::setup() {
         postServer.setup(postSettings);
         postServer.postRoute().registerPostEvents(this);
         postServer.start();
+        cout << "Using HTTP server." << endl;
     }
         
     if (sendWs) {
@@ -139,10 +141,12 @@ void ofApp::setup() {
         wsServer.setup(wsSettings);
         wsServer.webSocketRoute().registerWebSocketEvents(this);
         wsServer.start();
+        cout << "Using websockets." << endl;
     }
     
     if (sendOsc) {
         sender.setup(oscHost, oscPort);
+        cout << "Using OSC." << endl;
     }
 }
 
