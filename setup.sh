@@ -12,5 +12,6 @@ git clone https://github.com/n1ckfg/ofxNetworkUtils
 git clone https://github.com/n1ckfg/ofxSSLManager
 git clone https://github.com/n1ckfg/ofxSSLManager
 git clone https://github.com/n1ckfg/ofxJSON
+git clone https://github.com/n1ckfg/ofxCrypto
 
 cd $DIR

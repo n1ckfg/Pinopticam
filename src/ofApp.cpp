@@ -510,7 +510,7 @@ void ofApp::sendWsBlobs(int index, float x, float y) {
 }
 
 void ofApp::sendWsContours(int index) {
-    string msg = "{\"compname\":" + compname + ",\"index\":" + ofToString(index) + ",\"x\":" + ofToString(contourColorBuffer) + ",\"y\":" + ofToString(contourPointsBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
+    string msg = "{\"compname\":" + compname + ",\"index\":" + ofToString(index) + ",\"colors\":" + ofxCrypto::base64_encode(contourColorBuffer) + ",\"points\":" + ofxCrypto::base64_encode(contourPointsBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 

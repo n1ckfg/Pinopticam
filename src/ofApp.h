@@ -7,6 +7,7 @@
 #include "ofxXmlSettings.h"
 #include "ofxHTTP.h"
 #include "ofxJSONElement.h"
+#include "ofxCrypto.h"
 
 #define NUM_MESSAGES 30 // how many past ws messages we want to keep
 
