@@ -1,9 +1,9 @@
 sudo apt-get update
 
-sudo apt-get install xvfb
+sudo apt-get install -y xvfb
 
 # NTP
-sudo apt-get install htpdate iputils-clockdiff
+sudo apt-get install -y htpdate iputils-clockdiff
 sudo timedatectl set-ntp true
 timedatectl status
 
