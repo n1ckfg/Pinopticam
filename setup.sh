@@ -1,3 +1,12 @@
+sudo apt-get update
+
+sudo apt-get install xvfb
+
+# NTP
+sudo apt-get install htpdate iputils-clockdiff
+sudo timedatectl set-ntp true
+timedatectl status
+
 # https://github.com/Azure/azure-iot-sdk-c/issues/265
 
 DIR=$PWD
