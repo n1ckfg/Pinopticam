@@ -309,20 +309,11 @@ void ofApp::draw() {
     }
 }
 
-// ~ ~ ~ CAM ~ ~ ~
-/*
- void ofApp::onTakePhotoComplete(string fileName) {
-    ofLog() << "onTakePhotoComplete fileName: " << fileName;  
-
-    endTakePhoto(fileName);
-}
-*/
-
 // ~ ~ ~ POST ~ ~ ~
 void ofApp::onHTTPPostEvent(ofxHTTP::PostEventArgs& args) {
     ofLogNotice("ofApp::onHTTPPostEvent") << "Data: " << args.getBuffer().getText();
 
-    beginTakePhoto();
+    takePhoto();
 }
 
 
@@ -330,7 +321,7 @@ void ofApp::onHTTPFormEvent(ofxHTTP::PostFormEventArgs& args) {
     ofLogNotice("ofApp::onHTTPFormEvent") << "";
     ofxHTTP::HTTPUtils::dumpNameValueCollection(args.getForm(), ofGetLogLevel());
     
-    beginTakePhoto();
+    takePhoto();
 }
 
 
@@ -363,11 +354,9 @@ void ofApp::onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt) {
     cout << "Websocket connection opened." << endl;// << evt.getConnectionRef().getClientAddress().toString() << endl;
 }
 
-
 void ofApp::onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt) {
     cout << "Websocket connection closed." << endl; //<< evt.getConnectionRef().getClientAddress().toString() << endl;
 }
-
 
 void ofApp::onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt) {
     cout << "Websocket frame was received:" << endl; // << evt.getConnectionRef().getClientAddress().toString() << endl;
@@ -375,29 +364,9 @@ void ofApp::onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt)
     cout <<  msg << endl;
 
     if (msg == "take_photo") {
-        beginTakePhoto();
+        takePhoto();
     }
-    /*
-    ofxJSONElement json;
-
-    if (json.parse(evt.getFrameRef().getText())) {
-        //std::cout << json.toStyledString() << std::endl;
-
-        if (json.isMember("command") && json["command"] == "SET_BACKGROUND_COLOR") {
-            if (json["data"] == "white") {
-                //bgColor = ofColor::white;
-            } else if (json["data"] == "black") {
-                //bgColor = ofColor::black;
-            } else {
-                //cout << "Unknown color: " << json["data"].toStyledString() << endl;
-            }
-        }
-    } else {
-        //ofLogError("ofApp::onWebSocketFrameReceivedEvent") << "Unable to parse JSON: "  << evt.getFrameRef().getText();
-    }
-    */
 }
-
 
 void ofApp::onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt) {
     cout << "Websocket frame was sent." << endl;
@@ -438,16 +407,13 @@ void ofApp::createResultHtml(string fileName) {
     ofBufferToFile(photoIndexFileName, buff);
 }
 
-void ofApp::beginTakePhoto() {
-    string fileName = "test.jpg";
-    gray.save(ofToDataPath("DocumentRoot/photos/"+fileName));
-    createResultHtml(fileName);//"none");
-//}
-//
-//void ofApp::endTakePhoto(string fileName) {
-    //createResultHtml(fileName);
+void ofApp::takePhoto() {
+    ofSaveImage(gray, photoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_BEST);
+    string fileName = "photo_" + ofToString(timestamp) + ".jpg";
+    ofBufferToFile(ofToDataPath("DocumentRoot/photos/") + fileName, photoBuffer);
+    createResultHtml(fileName);
 
-    string msg = hostName + "," + lastPhotoTakenName;
+    string msg = "{\"unique_id\":" + uniqueId + ",\"hostname\":" + hostName + ",\"photo\":" + ofxCrypto::base64_encode(photoBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 

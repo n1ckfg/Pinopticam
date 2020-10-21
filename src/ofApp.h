@@ -31,21 +31,18 @@ class ofApp : public ofBaseApp {
 
 	ofFbo fbo;
 	ofPixels pixels;
-	int rpiCamVersion; // 0 for not an RPi cam, 1 for v1, 2 for v2
+	int rpiCamVersion; // 0 for not an RPi cam, 1, 2, or 3
 	string lastPhotoTakenName;
 	int stillCompression;
 	int timestamp;
 	
 	void createResultHtml(string fileName);
-	void beginTakePhoto();
-	//void endTakePhoto(string fileName);
+	void takePhoto();
 
 	ofxHTTP::SimpleIPVideoServer streamServer;
 	ofxHTTP::SimpleIPVideoServerSettings streamSettings;
 	vector<string> photoFiles;
 
-	//void onTakePhotoComplete(string fileName);
-	//void onPhotoGrabberEngineStart();
 	ofxHTTP::SimplePostServer postServer;
 	ofxHTTP::SimplePostServerSettings postSettings;
 	void onHTTPPostEvent(ofxHTTP::PostEventArgs& evt);
@@ -72,6 +69,7 @@ class ofApp : public ofBaseApp {
 	bool contours; // send contours, default false
 
 	ofBuffer videoBuffer;
+	ofBuffer photoBuffer;
 	ofBuffer contourColorBuffer;
 	ofBuffer contourPointsBuffer;
 
