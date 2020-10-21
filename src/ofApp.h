@@ -20,7 +20,7 @@ class ofApp : public ofBaseApp {
 		
 	int width, height, appFramerate, camFramerate;
 	
-	string compname, host; // hostname;
+	string uniqueId, hostName; 
 	string oscHost;
 	int oscPort, streamPort, wsPort, postPort;
 
@@ -66,7 +66,7 @@ class ofApp : public ofBaseApp {
 	bool sendWs;  // send websockets, default true
 	bool sendHttp;  // serve web control panel, default true
 	bool sendMjpeg;  // send mjpeg stream, default true	
-	bool oscVideo;  // send video image over osc, default false
+	bool syncVideo;  // send video image over osc, default false
 	bool brightestPixel;  // send brightest pixel, default false
 	bool blobs;  // send blob tracking, default true
 	bool contours; // send contours, default false
@@ -78,7 +78,7 @@ class ofApp : public ofBaseApp {
 	ofxCvPiCam cam;
 	cv::Mat frame, frameProcessed;
 	ofImage gray;
-	int oscVideoQuality; // 5 best to 1 worst, default 3 medium
+	int syncVideoQuality; // 5 best to 1 worst, default 3 medium
 	bool videoColor;
 
 	// for more camera settings, see:
@@ -104,6 +104,7 @@ class ofApp : public ofBaseApp {
 	void sendOscBlobs(int index, float x, float y);
 	void sendOscContours(int index);
 	void sendOscPixel(float x, float y);
+	void sendWsVideo();
 	void sendWsBlobs(int index, float x, float y);
 	void sendWsContours(int index);
 	void sendWsPixel(float x, float y);
