@@ -1,4 +1,5 @@
 # Pinopticam
+<img src="./docs/logo3.png"><br>
 
 ## Image operations:
 * Blob
