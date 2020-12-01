@@ -38,6 +38,7 @@ class ofApp : public ofBaseApp {
 	
 	void createResultHtml(string fileName);
 	void takePhoto();
+	void streamPhoto();
 
 	ofxHTTP::SimpleIPVideoServer streamServer;
 	ofxHTTP::SimpleIPVideoServerSettings streamSettings;

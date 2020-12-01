@@ -369,6 +369,8 @@ void ofApp::onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt)
 
     if (msg == "take_photo") {
         takePhoto();
+    } else if (msg == "stream_photo") {
+        streamPhoto();
     }
 }
 
@@ -416,6 +418,17 @@ void ofApp::takePhoto() {
     string fileName = "photo_" + ofToString(timestamp) + ".jpg";
     ofBufferToFile(ofToDataPath("DocumentRoot/photos/") + fileName, photoBuffer);
     createResultHtml(fileName);
+
+    //string msg = "{\"unique_id\":" + uniqueId + ",\"hostname\":" + hostName + ",\"photo\":" + ofxCrypto::base64_encode(photoBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
+    string msg = host + "," + lastPhotoTakenName;
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+}
+
+void ofApp::streamPhoto() {
+    ofSaveImage(gray, photoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_BEST);
+    //string fileName = "photo_" + ofToString(timestamp) + ".jpg";
+    //ofBufferToFile(ofToDataPath("DocumentRoot/photos/") + fileName, photoBuffer);
+    //createResultHtml(fileName);
 
     string msg = "{\"unique_id\":" + uniqueId + ",\"hostname\":" + hostName + ",\"photo\":" + ofxCrypto::base64_encode(photoBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
