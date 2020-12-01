@@ -420,7 +420,7 @@ void ofApp::takePhoto() {
     createResultHtml(fileName);
 
     //string msg = "{\"unique_id\":" + uniqueId + ",\"hostname\":" + hostName + ",\"photo\":" + ofxCrypto::base64_encode(photoBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
-    string msg = host + "," + lastPhotoTakenName;
+    string msg = hostName + "," + lastPhotoTakenName;
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 

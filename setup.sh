@@ -7,6 +7,9 @@ sudo apt-get install -y htpdate iputils-clockdiff
 sudo timedatectl set-ntp true
 timedatectl status
 
+# soft-hwclock
+sudo ./tools/soft-hwclock/install
+
 # https://github.com/Azure/azure-iot-sdk-c/issues/265
 
 DIR=$PWD
