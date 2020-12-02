@@ -430,8 +430,8 @@ void ofApp::streamPhoto() {
     //ofBufferToFile(ofToDataPath("DocumentRoot/photos/") + fileName, photoBuffer);
     //createResultHtml(fileName);
 
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"photo\":\"temp\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-//ofxCrypto::base64_encode(photoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string photo64 = ofxCrypto::base64_encode(photoBuffer);
+    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"photo\":\"" + photo64 + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 
