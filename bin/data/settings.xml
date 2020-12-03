@@ -31,8 +31,8 @@
     <threshold>120</threshold>
     <sharpness>50</sharpness>
 	<contrast>0</contrast>
-	<brightness>100</brightness>
-	<iso>800</iso>
+	<brightness>50</brightness>
+	<iso>1600</iso>
 	<exposure_mode>0</exposure_mode>
     <exposure_compensation>0</exposure_compensation>
 	<shutter_speed>100000</shutter_speed>
