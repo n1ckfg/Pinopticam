@@ -21,7 +21,7 @@
     <send_http>1</send_http>
     <!-- * -->
     <brightest_pixel>0</brightest_pixel>
-    <blobs>1</blobs>
+    <blobs>0</blobs>
     <contours>0</contours>
     <sync_video>0</sync_video>
     <!-- * -->
