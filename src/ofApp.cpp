@@ -53,6 +53,7 @@ void ofApp::setup() {
     
     cam.setup(width, height, camFramerate, videoColor); // color/gray;
 
+    camRotation = settings.getValue("settings:cam_rotation", 0); 
     camSharpness = settings.getValue("settings:sharpness", 0); 
     camContrast = settings.getValue("settings:contrast", 0); 
     camBrightness = settings.getValue("settings:brightness", 50); 
@@ -61,6 +62,7 @@ void ofApp::setup() {
     camExposureCompensation = settings.getValue("settings:exposure_compensation", 0); 
     camShutterSpeed = settings.getValue("settings:shutter_speed", 0);
 
+    cam.setRotation(camRotation);
     cam.setSharpness(camSharpness);
     cam.setContrast(camContrast);
     cam.setBrightness(camBrightness);
@@ -68,8 +70,8 @@ void ofApp::setup() {
     cam.setExposureMode((MMAL_PARAM_EXPOSUREMODE_T) camExposureMode);
     cam.setExposureCompensation(camExposureCompensation);
     cam.setShutterSpeed(camShutterSpeed);
-    //cam.setFrameRate // not implemented in ofxCvPiCam
-    
+    //cam.setFrameRate // not implemented in ofxCvPiCam 
+
     // ~ ~ ~   get a persistent name for this computer   ~ ~ ~
     // a randomly generated id
     uniqueId = "RPi";

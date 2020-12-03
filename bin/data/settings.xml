@@ -8,6 +8,7 @@
     <!-- * -->
     <app_framerate>60</app_framerate>
     <cam_framerate>40</cam_framerate>
+    <cam_rotation>0</cam_rotation>
     <width>640</width>
     <height>480</height>
     <debug>0</debug>

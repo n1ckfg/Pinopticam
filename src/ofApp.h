@@ -83,10 +83,11 @@ class ofApp : public ofBaseApp {
 	// for more camera settings, see:
 	// https://github.com/orgicus/ofxCvPiCam/blob/master/example-ofxCvPiCam-allSettings/src/testApp.cpp
 
-    int camShutterSpeed; // 0 to 330000 in microseconds, default 0
-    int camSharpness; // -100 to 100, default 0
-    int camContrast; // -100 to 100, default 0
-    int camBrightness; // 0 to 100, default 50
+        int camRotation;        
+        int camShutterSpeed; // 0 to 330000 in microseconds, default 0
+        int camSharpness; // -100 to 100, default 0
+        int camContrast; // -100 to 100, default 0
+        int camBrightness; // 0 to 100, default 50
 	int camIso; // 100 to 800, default 300
 	int camExposureCompensation; // -10 to 10, default 0;
 
