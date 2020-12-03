@@ -31,7 +31,7 @@
     <threshold>120</threshold>
     <sharpness>50</sharpness>
 	<contrast>0</contrast>
-	<brightness>50</brightness>
+	<brightness>100</brightness>
 	<iso>800</iso>
 	<exposure_mode>0</exposure_mode>
     <exposure_compensation>0</exposure_compensation>
