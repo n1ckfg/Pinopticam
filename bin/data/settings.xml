@@ -18,7 +18,7 @@
     <!-- * -->
     <send_osc>0</send_osc>
     <send_ws>1</send_ws>
-    <send_mjpeg>0</send_mjpeg>
+    <send_mjpeg>1</send_mjpeg>
     <send_http>0</send_http>
     <!-- * -->
     <brightest_pixel>0</brightest_pixel>
