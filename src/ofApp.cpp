@@ -468,12 +468,12 @@ void ofApp::sendOscContours(int index) {
     ofxOscMessage m;
     m.setAddress("/contour");
     
-    m.addStringArg(hostName);
+    //m.addStringArg(hostName);
     m.addStringArg(uniqueId);
     m.addIntArg(index);
     m.addBlobArg(contourColorBuffer);
     m.addBlobArg(contourPointsBuffer);
-    m.addIntArg(timestamp);
+    //m.addIntArg(timestamp);
 
     sender.sendMessage(m);
 }
