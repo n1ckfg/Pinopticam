@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <settings>
-    <osc_host>Vivarium.local</osc_host>
+    <osc_host>cube.local</osc_host>
     <osc_port>7110</osc_port>
     <stream_port>7111</stream_port>
     <ws_port>7112</ws_port>
@@ -24,7 +24,8 @@
     <brightest_pixel>0</brightest_pixel>
     <blobs>0</blobs>
     <contours>1</contours>
-    <sync_video>0</sync_video>
+    <broken_z>0</broken_z>
+<sync_video>0</sync_video>
     <!-- * -->
     <sync_video_quality>3</sync_video_quality>
     <video_color>0</video_color>
