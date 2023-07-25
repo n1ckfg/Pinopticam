@@ -114,6 +114,9 @@ class ofApp : public ofBaseApp {
 	float contourMinAreaRadius; // default 10
 	float contourMaxAreaRadius; // default 150
 	int contourSlices; // default 20
+	float simplify;
+	int smooth;
+		
 	ofxCv::TrackingColorMode trackingColorMode; // RGB, HSV, H, HS; default RGB
 
 };

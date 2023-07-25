@@ -100,6 +100,8 @@ void ofApp::setup() {
     contourThreshold = 2.0;
     contourMinAreaRadius = 1.0;
     contourMaxAreaRadius = 250.0;   
+    simplify = XML.getValue("settings:simplify", 0.5);
+    smooth = XML.getValue("settings:smooth", 2);
     contourFinder.setMinAreaRadius(contourMinAreaRadius);
     contourFinder.setMaxAreaRadius(contourMaxAreaRadius);
     //contourFinder.setInvert(true); // find black instead of white
@@ -247,6 +249,8 @@ void ofApp::draw() {
                 int n = contourFinder.size();
                 for (int i = 0; i < n; i++) {
                     ofPolyline line = contourFinder.getPolyline(i);
+                    line.simplify(simplify);
+                    line = line.getSmoothed(smooth, 0.5);
                     vector<glm::vec3> cvPoints = line.getVertices();
 
                     int x = int(cvPoints[0].x);
