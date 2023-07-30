@@ -100,8 +100,8 @@ void ofApp::setup() {
     contourThreshold = 2.0;
     contourMinAreaRadius = 1.0;
     contourMaxAreaRadius = 250.0;   
-    simplify = XML.getValue("settings:simplify", 0.5);
-    smooth = XML.getValue("settings:smooth", 2);
+    simplify = settings.getValue("settings:simplify", 0.5);
+    smooth = settings.getValue("settings:smooth", 2);
     contourFinder.setMinAreaRadius(contourMinAreaRadius);
     contourFinder.setMaxAreaRadius(contourMaxAreaRadius);
     //contourFinder.setInvert(true); // find black instead of white
