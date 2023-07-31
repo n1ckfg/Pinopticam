@@ -21,11 +21,11 @@ void oscSetup() {
 
 // Receive message example
 void oscEvent(OscMessage msg) {
-  println(msg);
-  if (msg.checkAddrPattern("/contour") && msg.checkTypetag("ssibbi")) {    
-    int index = msg.get(2).intValue();
-    byte[] readColorBytes = msg.get(3).blobValue();
-    byte[] readPointsBytes = msg.get(4).blobValue();
+  //println(msg);
+  if (msg.checkAddrPattern("/contour") && msg.checkTypetag("sibb")) {    
+    int index = msg.get(1).intValue();
+    byte[] readColorBytes = msg.get(2).blobValue();
+    byte[] readPointsBytes = msg.get(3).blobValue();
    
     byte[] bytesR = { readColorBytes[0], readColorBytes[1], readColorBytes[2], readColorBytes[3] };
     byte[] bytesG = { readColorBytes[4], readColorBytes[5], readColorBytes[6], readColorBytes[7] };
@@ -40,20 +40,20 @@ void oscEvent(OscMessage msg) {
     }
  
     ArrayList<PVector> points = new ArrayList<PVector>();
-    for (int i = 0; i < readPointsBytes.length; i += 8) { //+=16) { 
+    for (int i = 0; i < readPointsBytes.length; i += 12) { //+=16) { 
       byte[] bytesX = { readPointsBytes[i], readPointsBytes[i+1], readPointsBytes[i+2], readPointsBytes[i+3] };
       byte[] bytesY = { readPointsBytes[i+4], readPointsBytes[i+5], readPointsBytes[i+6], readPointsBytes[i+7] };
-      //byte[] bytesZ = { readPointsBytes[i+8], readPointsBytes[i+9], readPointsBytes[i+10], readPointsBytes[i+11] };
+      byte[] bytesZ = { readPointsBytes[i+8], readPointsBytes[i+9], readPointsBytes[i+10], readPointsBytes[i+11] };
       //byte[] bytesW = { readPointsBytes[i+12], readPointsBytes[i+13], readPointsBytes[i+14], readPointsBytes[i+15] };
 
       float x = asFloat(bytesX);
       float y = asFloat(bytesY);
-      //float z = asFloat(bytesZ);
+      float z = asFloat(bytesZ);
       //float w = asFloat(bytesW);
       if (!Float.isNaN(x) && !Float.isNaN(y)) { // && !Float.isNaN(z)) {
-        PVector p = new PVector(x, y);
+        PVector p = new PVector(x, y, z);
         points.add(p);
-        println(p.x + " " + p.y);
+        //println(p.x + ", " + p.y + ", " + p.z);
       }
     }
     
