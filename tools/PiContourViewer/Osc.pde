@@ -22,10 +22,10 @@ void oscSetup() {
 // Receive message example
 void oscEvent(OscMessage msg) {
   //println(msg);
-  if (msg.checkAddrPattern("/contour") && msg.checkTypetag("sibb")) {    
-    int index = msg.get(1).intValue();
-    byte[] readColorBytes = msg.get(2).blobValue();
-    byte[] readPointsBytes = msg.get(3).blobValue();
+  if (msg.checkAddrPattern("/contour") && msg.checkTypetag("ssibbi")) {    
+    int index = msg.get(2).intValue();
+    byte[] readColorBytes = msg.get(3).blobValue();
+    byte[] readPointsBytes = msg.get(4).blobValue();
    
     byte[] bytesR = { readColorBytes[0], readColorBytes[1], readColorBytes[2], readColorBytes[3] };
     byte[] bytesG = { readColorBytes[4], readColorBytes[5], readColorBytes[6], readColorBytes[7] };
