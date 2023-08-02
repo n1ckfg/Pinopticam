@@ -82,8 +82,7 @@ void ofApp::setup() {
         uniqueId = buff.getText();
     } else { // otherwise make a new one
         uniqueId += "_" + ofGetTimestampString("%y%m%d%H%M%S%i");
-        ofStringReplace(uniqueId, "\n", "");
-        ofStringReplace(uniqueId, "\r", "");
+        uniqueId = cleanString(uniqueId);
         buff.set(uniqueId.c_str(), uniqueId.size());
         ofBufferToFile("unique_id.txt", buff);
     }
@@ -501,7 +500,7 @@ void ofApp::sendOscPixel(float x, float y) {
 
 void ofApp::sendWsVideo() { 
     string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"video\":\"" + ofxCrypto::base64_encode(videoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
 void ofApp::sendWsBlobs(int index, float x, float y) {   
@@ -509,15 +508,13 @@ void ofApp::sendWsBlobs(int index, float x, float y) {
     float yPos = y / (float) height;
     
     string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
 void ofApp::sendWsContours(int index) {
     //string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":" + ofToString(index) + ",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":" + ofToString(timestamp) + "}";
-    ofStringReplace(msg, "\n", "");
-    ofStringReplace(msg, "\r", "");
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
 void ofApp::sendWsPixel(float x, float y) {   
@@ -525,5 +522,11 @@ void ofApp::sendWsPixel(float x, float y) {
     float yPos = y / (float) height;
 
     string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
+    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
+}
+
+string ofApp::cleanString(string input) {
+    ofStringReplace(input, "\n", "");
+    ofStringReplace(input, "\r", ""); 
+    return input;   
 }
