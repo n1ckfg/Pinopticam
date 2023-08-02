@@ -263,13 +263,14 @@ void ofApp::draw() {
                     char const * pColor = reinterpret_cast<char const *>(colorData);
                     std::string colorString(pColor, pColor + sizeof colorData);
                     contourColorBuffer.set(colorString); 
-
+                    
+                    float z = col.getBrightness();
                     float pointsData[cvPoints.size() * 3]; 
                     for (int j=0; j<cvPoints.size(); j++) {
                         int index = j * 3;
                         pointsData[index] = cvPoints[j].x;
                         pointsData[index+1] = cvPoints[j].y;
-                        pointsData[index+2] = 1.0; //cvPoints[j].z;
+                        pointsData[index+2] = z; ///cvPoints[j].z;
                     }
                     char const * pPoints = reinterpret_cast<char const *>(pointsData);
                     std::string pointsString(pPoints, pPoints + sizeof pointsData);
@@ -473,12 +474,12 @@ void ofApp::sendOscContours(int index) {
     ofxOscMessage m;
     m.setAddress("/contour");
     
-    //m.addStringArg(hostName);
+    m.addStringArg(hostName);
     m.addStringArg(uniqueId);
     m.addIntArg(index);
     m.addBlobArg(contourColorBuffer);
     m.addBlobArg(contourPointsBuffer);
-    //m.addIntArg(timestamp);
+    m.addIntArg(timestamp);
 
     sender.sendMessage(m);
 }
@@ -512,7 +513,8 @@ void ofApp::sendWsBlobs(int index, float x, float y) {
 }
 
 void ofApp::sendWsContours(int index) {
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    //string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":" + ofToString(index) + ",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":" + ofToString(timestamp) + "}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 
