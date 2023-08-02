@@ -515,6 +515,8 @@ void ofApp::sendWsBlobs(int index, float x, float y) {
 void ofApp::sendWsContours(int index) {
     //string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":" + ofToString(index) + ",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":" + ofToString(timestamp) + "}";
+    ofStringReplace(msg, "\n", "");
+    ofStringReplace(msg, "\r", "");
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 
