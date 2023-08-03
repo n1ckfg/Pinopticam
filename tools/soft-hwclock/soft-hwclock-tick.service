@@ -1,7 +1,0 @@
-[Unit]
-Description=Save hwclock by timer
-
-[Service]
-Type=oneshot
-ExecStart=/opt/soft-hwclock/soft-hwclock tick > /dev/null
-
