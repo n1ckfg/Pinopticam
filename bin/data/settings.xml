@@ -24,8 +24,7 @@
     <brightest_pixel>0</brightest_pixel>
     <blobs>0</blobs>
     <contours>1</contours>
-    <broken_z>0</broken_z>
-<sync_video>0</sync_video>
+    <sync_video>0</sync_video>
     <!-- * -->
     <sync_video_quality>3</sync_video_quality>
     <video_color>0</video_color>
