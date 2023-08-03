@@ -16,8 +16,8 @@ void setup() {
   cam =  new PeasyCam(this, width/2, height/2, 400, 50);
   strokesBuffer = new ArrayList<Stroke>();
   frame = new Frame(strokesBuffer);
-  oscSetup();
-  //wsSetup();
+  //oscSetup();
+  wsSetup();
   fps = int((1.0/float(fps)) * 1000);
 }
 

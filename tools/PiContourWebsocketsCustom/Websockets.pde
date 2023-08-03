@@ -10,7 +10,7 @@ void wsSetup(){
 }
 
 void webSocketEvent(String msg){
-  msg = msg.replace("\n","").replace("\r","");
+  //msg = msg.replace("\n","").replace("\r","");
   try {
     JSONObject json = parseJSONObject(msg);
     int index = json.getInt("index");
