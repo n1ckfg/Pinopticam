@@ -1,5 +1,5 @@
 #include "ofApp.h"
-#include "../../core/common/src/PinopticonUtils.hpp"
+#include "../../common/src/PinopticonUtils.hpp"
 
 using namespace cv;
 using namespace ofxCv;
