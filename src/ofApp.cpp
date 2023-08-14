@@ -74,16 +74,16 @@ void ofApp::setup() {
 
     // ~ ~ ~   get a persistent name for this computer   ~ ~ ~
     // a randomly generated id
-    uniqueId = "RPi";
+    sessionId = "RPi";
     file.open(ofToDataPath("unique_id.txt"), ofFile::ReadWrite, false);
     ofBuffer buff;
     if (file) { // use existing file if it's there
         buff = file.readToBuffer();
-        uniqueId = buff.getText();
+        sessionId = buff.getText();
     } else { // otherwise make a new one
-        uniqueId += "_" + ofGetTimestampString("%y%m%d%H%M%S%i");
-        uniqueId = cleanString(uniqueId);
-        buff.set(uniqueId.c_str(), uniqueId.size());
+        sessionId += "_" + ofGetTimestampString("%y%m%d%H%M%S%i");
+        sessionId = cleanString(sessionId);
+        buff.set(sessionId.c_str(), sessionId.size());
         ofBufferToFile("unique_id.txt", buff);
     }
    
@@ -426,7 +426,7 @@ void ofApp::takePhoto() {
     ofBufferToFile(ofToDataPath("DocumentRoot/photos/") + fileName, photoBuffer);
     createResultHtml(fileName);
 
-    //string msg = "{\"unique_id\":" + uniqueId + ",\"hostname\":" + hostName + ",\"photo\":" + ofxCrypto::base64_encode(photoBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
+    //string msg = "{\"unique_id\":" + sessionId + ",\"hostname\":" + hostName + ",\"photo\":" + ofxCrypto::base64_encode(photoBuffer) + ",\"timestamp\":" + ofToString(timestamp) + "}";
     string msg = hostName + "," + lastPhotoTakenName;
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
@@ -438,7 +438,7 @@ void ofApp::streamPhoto() {
     //createResultHtml(fileName);
 
     string photo64 = ofxCrypto::base64_encode(photoBuffer);
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"photo\":\"" + photo64 + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"photo\":\"" + photo64 + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 
@@ -448,7 +448,7 @@ void ofApp::sendOscVideo() {
     m.setAddress("/video");
 
     m.addStringArg(hostName);    
-    m.addStringArg(uniqueId);    
+    m.addStringArg(sessionId);    
     m.addBlobArg(videoBuffer);
     m.addIntArg(timestamp);
     
@@ -460,7 +460,7 @@ void ofApp::sendOscBlobs(int index, float x, float y) {
     m.setAddress("/blob");
 
     m.addStringArg(hostName);   
-    m.addStringArg(uniqueId);
+    m.addStringArg(sessionId);
     m.addIntArg(index);  
     m.addFloatArg(x / (float) width);
     m.addFloatArg(y / (float) height);
@@ -474,7 +474,7 @@ void ofApp::sendOscContours(int index) {
     m.setAddress("/contour");
     
     m.addStringArg(hostName);
-    m.addStringArg(uniqueId);
+    m.addStringArg(sessionId);
     m.addIntArg(index);
     m.addBlobArg(contourColorBuffer);
     m.addBlobArg(contourPointsBuffer);
@@ -488,7 +488,7 @@ void ofApp::sendOscPixel(float x, float y) {
     m.setAddress("/pixel");
 
     m.addStringArg(hostName);   
-    m.addStringArg(uniqueId);   
+    m.addStringArg(sessionId);   
     m.addFloatArg(x / (float) width);
     m.addFloatArg(y / (float) height);
     m.addIntArg(timestamp);
@@ -499,7 +499,7 @@ void ofApp::sendOscPixel(float x, float y) {
 // ~ ~ ~ ~ ~ 
 
 void ofApp::sendWsVideo() { 
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"video\":\"" + ofxCrypto::base64_encode(videoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"video\":\"" + ofxCrypto::base64_encode(videoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
@@ -507,13 +507,13 @@ void ofApp::sendWsBlobs(int index, float x, float y) {
     float xPos = x / (float) width;
     float yPos = y / (float) height;
     
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
 void ofApp::sendWsContours(int index) {
-    //string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"index\":" + ofToString(index) + ",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":" + ofToString(timestamp) + "}";
+    //string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"index\":" + ofToString(index) + ",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":" + ofToString(timestamp) + "}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
@@ -521,7 +521,7 @@ void ofApp::sendWsPixel(float x, float y) {
     float xPos = x / (float) width;
     float yPos = y / (float) height;
 
-    string msg = "{\"unique_id\":\"" + uniqueId + "\",\"hostname\":\"" + hostName + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
+    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 

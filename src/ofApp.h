@@ -20,7 +20,7 @@ class ofApp : public ofBaseApp {
 		
 	int width, height, appFramerate, camFramerate;
 	
-	string uniqueId, hostName; 
+	string sessionId, hostName; 
 	string oscHost;
 	int oscPort, streamPort, wsPort, postPort;
 
