@@ -1,7 +1,9 @@
 #include "ofApp.h"
+#include "../../core/common/src/PinopticonUtils.hpp"
 
 using namespace cv;
 using namespace ofxCv;
+using namespace PinopticonUtils;
 
 //--------------------------------------------------------------
 void ofApp::setup() {
@@ -74,23 +76,11 @@ void ofApp::setup() {
 
     // ~ ~ ~   get a persistent name for this computer   ~ ~ ~
     // a randomly generated id
-    sessionId = "RPi";
-    file.open(ofToDataPath("unique_id.txt"), ofFile::ReadWrite, false);
-    ofBuffer buff;
-    if (file) { // use existing file if it's there
-        buff = file.readToBuffer();
-        sessionId = buff.getText();
-    } else { // otherwise make a new one
-        sessionId += "_" + ofGetTimestampString("%y%m%d%H%M%S%i");
-        sessionId = cleanString(sessionId);
-        buff.set(sessionId.c_str(), sessionId.size());
-        ofBufferToFile("unique_id.txt", buff);
-    }
+    sessionId = getSessionId();
    
     // the actual RPi hostname
     ofSystem("cp /etc/hostname " + ofToDataPath("DocumentRoot/js/"));
-    hostName = ofSystem("cat /etc/hostname");
-    hostName.pop_back(); // last char is \n
+    hostName = getHostName();
     
     fbo.allocate(width, height, GL_RGBA);
     pixels.allocate(width, height, OF_IMAGE_COLOR);
@@ -165,23 +155,7 @@ void ofApp::update() {
         if (sendMjpeg) streamServer.send(gray.getPixels());
         
         if (syncVideo) {
-            switch(syncVideoQuality) {
-                case 5:
-                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_BEST);
-                    break;
-                case 4:
-                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_HIGH);
-                    break;
-                case 3:
-                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_MEDIUM);
-                    break;
-                case 2:
-                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_LOW);
-                    break;
-                case 1:
-                    ofSaveImage(gray, videoBuffer, OF_IMAGE_FORMAT_JPEG, OF_IMAGE_QUALITY_WORST);
-                    break;
-            }
+            imagetoBuffer(gray, videoBuffer, syncVideoQuality);
        	}
     }
 }
@@ -525,8 +499,3 @@ void ofApp::sendWsPixel(float x, float y) {
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
 
-string ofApp::cleanString(string input) {
-    ofStringReplace(input, "\n", "");
-    ofStringReplace(input, "\r", ""); 
-    return input;   
-}
