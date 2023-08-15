@@ -233,10 +233,10 @@ void ofApp::draw() {
                     colorData[0] = col.r;
                     colorData[1] = col.g;
                     colorData[2] = col.b;
-                    //char const * pColor = reinterpret_cast<char const *>(colorData);
-                    //std::string colorString(pColor, pColor + sizeof colorData);
-                    //contourColorBuffer.set(colorString); 
-                    floatsToBuffer(colorData, contourColorBuffer);
+                    char const * pColor = reinterpret_cast<char const *>(colorData);
+                    std::string colorString(pColor, pColor + sizeof colorData);
+                    contourColorBuffer.set(colorString); 
+                    //floatsToBuffer(colorData, contourColorBuffer);
 
                     float z = col.getBrightness();
                     float pointsData[cvPoints.size() * 3]; 
@@ -246,10 +246,10 @@ void ofApp::draw() {
                         pointsData[index+1] = cvPoints[j].y;
                         pointsData[index+2] = z; ///cvPoints[j].z;
                     }
-                    //char const * pPoints = reinterpret_cast<char const *>(pointsData);
-                    //std::string pointsString(pPoints, pPoints + sizeof pointsData);
-                    //contourPointsBuffer.set(pointsString); 
-                    floatsToBuffer(pointsData, contourPointsBuffer);
+                    char const * pPoints = reinterpret_cast<char const *>(pointsData);
+                    std::string pointsString(pPoints, pPoints + sizeof pointsData);
+                    contourPointsBuffer.set(pointsString); 
+                    //floatsToBuffer(pointsData, contourPointsBuffer);
 
                     if (sendOsc) sendOscContours(contourCounter);
                     if (sendWs) sendWsContours(contourCounter);
