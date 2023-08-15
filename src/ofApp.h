@@ -119,6 +119,4 @@ class ofApp : public ofBaseApp {
 		
 	ofxCv::TrackingColorMode trackingColorMode; // RGB, HSV, H, HS; default RGB
 
-	string cleanString(string input);
-
 };
