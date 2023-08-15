@@ -174,7 +174,7 @@ void ofApp::draw() {
         }
 
         if (syncVideo) {
-            if (sendOsc) sendOscVideo();
+            if (sendOsc) sendOscVideo(sender, hostName, sessionId, videoBuffer, timeStamp);
             if (sendWs) sendWsVideo();
         } 
 
@@ -199,7 +199,7 @@ void ofApp::draw() {
                 	ofDrawCircle(circleCenter, 1);
                 }
 
-                if (sendOsc) sendOscBlobs(i, circleCenter.x, circleCenter.y);
+                if (sendOsc) sendOscBlobs(sender, hostName, sessionId, i, circleCenter.x, circleCenter.y, timestamp);
                 if (sendWs) sendWsBlobs(i, circleCenter.x, circleCenter.y);
             }
         }
@@ -249,7 +249,7 @@ void ofApp::draw() {
                     std::string pointsString(pPoints, pPoints + sizeof pointsData);
                     contourPointsBuffer.set(pointsString); 
 
-                    if (sendOsc) sendOscContours(contourCounter);
+                    if (sendOsc) sendOscContours(sender, hostName, sessionId, contourCounter, contourColorBuffer, contourPointsBuffer, timestamp);
                     if (sendWs) sendWsContours(contourCounter);
                     contourCounter++;
                 }        
@@ -282,7 +282,7 @@ void ofApp::draw() {
             	ofDrawCircle(circleCenter, 40);
             }
 
-            if (sendOsc) sendOscPixel(maxBrightnessX, maxBrightnessY);
+            if (sendOsc) sendOscPixel(sender, hostName, sessionId, maxBrightnessX, maxBrightnessY, timestamp);
             if (sendWs) sendWsPixel(maxBrightnessX, maxBrightnessY);
         }
     }
@@ -417,6 +417,7 @@ void ofApp::streamPhoto() {
 }
 
 // ~ ~ ~ OSC ~ ~ ~
+/*
 void ofApp::sendOscVideo() {
     ofxOscMessage m;
     m.setAddress("/video");
@@ -469,7 +470,7 @@ void ofApp::sendOscPixel(float x, float y) {
     
     sender.sendMessage(m);
 }
-
+*/
 // ~ ~ ~ ~ ~ 
 
 void ofApp::sendWsVideo() { 
