@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include "../../common/src/PinopticonUtils.hpp"
+#include "../../common/src/PinopticonUtilsHttp.hpp"
 
 using namespace cv;
 using namespace ofxCv;
@@ -175,7 +176,7 @@ void ofApp::draw() {
 
         if (syncVideo) {
             if (sendOsc) sendOscVideo(sender, hostName, sessionId, videoBuffer, timestamp);
-            if (sendWs) sendWsVideo();
+            if (sendWs) sendWsVideo(wsServer, hostName, sessionId, videoBuffer, timestamp);
         } 
 
         if (blobs) {
@@ -200,7 +201,7 @@ void ofApp::draw() {
                 }
 
                 if (sendOsc) sendOscBlobs(sender, hostName, sessionId, i, circleCenter.x, circleCenter.y, timestamp);
-                if (sendWs) sendWsBlobs(i, circleCenter.x, circleCenter.y);
+                if (sendWs) sendWsBlobs(wsServer, hostName, sessionId, i, circleCenter.x, circleCenter.y, timestamp);
             }
         }
 
@@ -250,7 +251,7 @@ void ofApp::draw() {
                     contourPointsBuffer.set(pointsString); 
 
                     if (sendOsc) sendOscContours(sender, hostName, sessionId, contourCounter, contourColorBuffer, contourPointsBuffer, timestamp);
-                    if (sendWs) sendWsContours(contourCounter);
+                    if (sendWs) sendWsContours(wsServer, hostName, sessionId, contourCounter, contourColorBuffer, contourPointsBuffer, timestamp);
                     contourCounter++;
                 }        
             }
@@ -283,7 +284,7 @@ void ofApp::draw() {
             }
 
             if (sendOsc) sendOscPixel(sender, hostName, sessionId, maxBrightnessX, maxBrightnessY, timestamp);
-            if (sendWs) sendWsPixel(maxBrightnessX, maxBrightnessY);
+            if (sendWs) sendWsPixel(wsServer, hostName, sessionId, maxBrightnessX, maxBrightnessY, timestamp);
         }
     }
 
@@ -470,7 +471,7 @@ void ofApp::sendOscPixel(float x, float y) {
     
     sender.sendMessage(m);
 }
-*/
+
 // ~ ~ ~ ~ ~ 
 
 void ofApp::sendWsVideo() { 
@@ -499,4 +500,4 @@ void ofApp::sendWsPixel(float x, float y) {
     string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
 }
-
+*/

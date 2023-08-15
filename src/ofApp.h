@@ -106,12 +106,12 @@ class ofApp : public ofBaseApp {
 		void sendOscBlobs(int index, float x, float y);
 		void sendOscContours(int index);
 		void sendOscPixel(float x, float y);
-		*/
 		
 		void sendWsVideo();
 		void sendWsBlobs(int index, float x, float y);
 		void sendWsContours(int index);
 		void sendWsPixel(float x, float y);
+		*/
 
 		ofxCv::ContourFinder contourFinder;
 		float contourThreshold;  // default 127
