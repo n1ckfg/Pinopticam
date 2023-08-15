@@ -145,7 +145,7 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-    timestamp = (int) ofGetSystemTimeMillis();
+    timestamp = getTimestamp();
     
     frame = cam.grab();
 
@@ -174,7 +174,7 @@ void ofApp::draw() {
         }
 
         if (syncVideo) {
-            if (sendOsc) sendOscVideo(sender, hostName, sessionId, videoBuffer, timeStamp);
+            if (sendOsc) sendOscVideo(sender, hostName, sessionId, videoBuffer, timestamp);
             if (sendWs) sendWsVideo();
         } 
 
