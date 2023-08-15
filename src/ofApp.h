@@ -19,7 +19,7 @@ class ofApp : public ofBaseApp {
 		void draw();
 			
 		int width, height, appFramerate, camFramerate;
-		
+		int thumbWidth, thumbHeight;
 		string sessionId, hostName; 
 		string oscHost;
 		int oscPort, streamPort, wsPort, postPort;
@@ -77,6 +77,7 @@ class ofApp : public ofBaseApp {
 		ofxCvPiCam cam;
 		cv::Mat frame, frameProcessed;
 		ofImage gray;
+		ofImage grayThumbnail;
 		int syncVideoQuality; // 5 best to 1 worst, default 3 medium
 		bool videoColor;
 
