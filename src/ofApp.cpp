@@ -111,8 +111,7 @@ void ofApp::setup() {
     setupMjpeg(streamServer, streamPort, maxClientConnections, maxClientBitRate, maxClientFrameRate, maxClientQueueSize, width, height, "live_view.html");
 
     // * post form *
-    setupHttp(postServer, postPort, "result.html");
-    postServer.postRoute().registerPostEvents(this);
+    setupHttp(this, postServer, postPort, "result.html");
 
     // * websockets *
     // events: connect, open, close, idle, message, broadcast
