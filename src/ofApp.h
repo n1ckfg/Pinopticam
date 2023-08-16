@@ -39,9 +39,9 @@ class ofApp : public ofBaseApp {
 		void createResultHtml(string fileName);
 		void takePhoto();
 		void streamPhoto();
+		vector<string> photoFiles;
 
 		ofxHTTP::SimpleIPVideoServer streamServer;
-		vector<string> photoFiles;
 
 		ofxHTTP::SimplePostServer postServer;
 		void onHTTPPostEvent(ofxHTTP::PostEventArgs& evt);
