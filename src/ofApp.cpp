@@ -104,18 +104,15 @@ void ofApp::setup() {
     trackingColorMode = TRACK_COLOR_RGB;
 
     // * stream video *
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/IPVideoRoute.h
-    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/IPVideoRoute.cpp
     int maxClientConnections = settings.getValue("settings:max_stream_connections", 5); // default 5
     int maxClientBitRate = settings.getValue("settings:max_stream_bitrate", 512); // default 1024
     int maxClientFrameRate = settings.getValue("settings:max_stream_framerate", 30); // default 30
     int maxClientQueueSize = settings.getValue("settings:max_stream_queue", 10); // default 10
-
-    // * stream video *
     setupMjpeg(streamServer, streamPort, maxClientConnections, maxClientBitRate, maxClientFrameRate, maxClientQueueSize, width, height, "live_view.html");
 
     // * post form *
     setupHttp(postServer, postPort, "result.html");
+    postServer.postRoute().registerPostEvents(this);
 
     // * websockets *
     // events: connect, open, close, idle, message, broadcast
