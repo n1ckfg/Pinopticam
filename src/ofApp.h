@@ -41,17 +41,14 @@ class ofApp : public ofBaseApp {
 		void streamPhoto();
 
 		ofxHTTP::SimpleIPVideoServer streamServer;
-		ofxHTTP::SimpleIPVideoServerSettings streamSettings;
 		vector<string> photoFiles;
 
 		ofxHTTP::SimplePostServer postServer;
-		ofxHTTP::SimplePostServerSettings postSettings;
 		void onHTTPPostEvent(ofxHTTP::PostEventArgs& evt);
 		void onHTTPFormEvent(ofxHTTP::PostFormEventArgs& evt);
 		void onHTTPUploadEvent(ofxHTTP::PostUploadEventArgs& evt);
 		    	       
 	    ofxHTTP::SimpleWebSocketServer wsServer;  
-		ofxHTTP::SimpleWebSocketServerSettings wsSettings;
 		void onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt);
 		void onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt);
 		void onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt);

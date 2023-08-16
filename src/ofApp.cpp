@@ -1,6 +1,7 @@
 #include "ofApp.h"
 #include "../../common/src/PinopticonUtils.hpp"
-#include "../../common/src/PinopticonUtilsHttp.hpp"
+#include "../../common/src/PinopticonUtils_Osc.hpp"
+#include "../../common/src/PinopticonUtils_Http.hpp"
 
 using namespace cv;
 using namespace ofxCv;
@@ -102,51 +103,25 @@ void ofApp::setup() {
     //contourFinder.setInvert(true); // find black instead of white
     trackingColorMode = TRACK_COLOR_RGB;
 
-    if (sendMjpeg) {
-        // * stream video *
-        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/IPVideoRoute.h
-        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/IPVideoRoute.cpp
-        streamSettings.setPort(streamPort);
-        streamSettings.ipVideoRouteSettings.setMaxClientConnections(settings.getValue("settings:max_stream_connections", 5)); // default 5
-        streamSettings.ipVideoRouteSettings.setMaxClientBitRate(settings.getValue("settings:max_stream_bitrate", 512)); // default 1024
-        streamSettings.ipVideoRouteSettings.setMaxClientFrameRate(settings.getValue("settings:max_stream_framerate", 30)); // default 30
-        streamSettings.ipVideoRouteSettings.setMaxClientQueueSize(settings.getValue("settings:max_stream_queue", 10)); // default 10
-        streamSettings.ipVideoRouteSettings.setMaxStreamWidth(width); // default 1920
-        streamSettings.ipVideoRouteSettings.setMaxStreamHeight(height); // default 1080
-        streamSettings.fileSystemRouteSettings.setDefaultIndex("live_view.html");
-        streamServer.setup(streamSettings);
-        streamServer.start();
-        cout << "Using MJPEG stream." << endl;
-    }
+    // * stream video *
+    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/IPVideoRoute.h
+    // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/IPVideoRoute.cpp
+    int maxClientConnections = settings.getValue("settings:max_stream_connections", 5); // default 5
+    int maxClientBitRate = settings.getValue("settings:max_stream_bitrate", 512); // default 1024
+    int maxClientFrameRate = settings.getValue("settings:max_stream_framerate", 30); // default 30
+    int maxClientQueueSize = settings.getValue("settings:max_stream_queue", 10); // default 10
 
-    if (sendHttp) {
-        // * post form *
-        // https://bakercp.github.io/ofxHTTP/classofx_1_1_h_t_t_p_1_1_simple_post_server_settings.html
-        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/PostRoute.cpp
-        postSettings.setPort(postPort);
-        postSettings.postRouteSettings.setUploadRedirect("result.html");
-        postServer.setup(postSettings);
-        postServer.postRoute().registerPostEvents(this);
-        postServer.start();
-        cout << "Using HTTP server." << endl;
-    }
-        
-    if (sendWs) {
-        // * websockets *
-        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/include/ofx/HTTP/WebSocketConnection.h
-        // https://github.com/bakercp/ofxHTTP/blob/master/libs/ofxHTTP/src/WebSocketConnection.cpp
-        // events: connect, open, close, idle, message, broadcast
-        wsSettings.setPort(wsPort);
-        wsServer.setup(wsSettings);
-        wsServer.webSocketRoute().registerWebSocketEvents(this);
-        wsServer.start();
-        cout << "Using websockets." << endl;
-    }
-    
-    if (sendOsc) {
-        sender.setup(oscHost, oscPort);
-        cout << "Using OSC." << endl;
-    }
+    // * stream video *
+    setupMjpeg(streamServer, streamPort, maxClientConnections, maxClientBitRate, maxClientFrameRate, maxClientQueueSize, width, height, "live_view.html");
+
+    // * post form *
+    setupHttp(postServer, postPort, "result.html");
+
+    // * websockets *
+    // events: connect, open, close, idle, message, broadcast
+    setupWs(wsPort);
+
+    setupOsc(oscHost, oscPort);
 }
 
 //--------------------------------------------------------------
