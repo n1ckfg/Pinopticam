@@ -115,9 +115,9 @@ void ofApp::setup() {
 
     // * websockets *
     // events: connect, open, close, idle, message, broadcast
-    setupWs(this, wsServer, wsPort);
+    setupWsServer(this, wsServer, wsPort);
 
-    setupOsc(sender, oscHost, oscPort);
+    setupOscSender(sender, oscHost, oscPort);
 }
 
 //--------------------------------------------------------------

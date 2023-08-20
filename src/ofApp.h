@@ -57,14 +57,15 @@ class ofApp : public ofBaseApp {
 	    
 		// ~ ~ ~ ~ ~ ~ ~     
 
-		bool sendOsc;  // send osc, default true
-		bool sendWs;  // send websockets, default true
-		bool sendHttp;  // serve web control panel, default true
-		bool sendMjpeg;  // send mjpeg stream, default true	
-		bool syncVideo;  // send video image over osc, default false
-		bool brightestPixel;  // send brightest pixel, default false
-		bool blobs;  // send blob tracking, default true
-		bool contours; // send contours, default false
+		bool sendOsc;  // send osc
+		bool sendWs;  // send websockets
+		bool sendHttp;  // serve web control panel
+		bool sendMjpeg;  // send mjpeg stream	
+
+		bool syncVideo;  // send video image over osc
+		bool brightestPixel;  // send brightest pixel
+		bool blobs;  // send blob tracking
+		bool contours; // send contours
 
 		ofBuffer videoBuffer;
 		ofBuffer photoBuffer;
@@ -99,18 +100,6 @@ class ofApp : public ofBaseApp {
 
 		ofxOscSender sender;
 		
-		/*
-		void sendOscVideo();
-		void sendOscBlobs(int index, float x, float y);
-		void sendOscContours(int index);
-		void sendOscPixel(float x, float y);
-		
-		void sendWsVideo();
-		void sendWsBlobs(int index, float x, float y);
-		void sendWsContours(int index);
-		void sendWsPixel(float x, float y);
-		*/
-
 		ofxCv::ContourFinder contourFinder;
 		float contourThreshold;  // default 127
 		float contourMinAreaRadius; // default 10
