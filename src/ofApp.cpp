@@ -1,11 +1,11 @@
 #include "ofApp.h"
-#include "../../common/src/PinopticonUtils.hpp"
-#include "../../common/src/PinopticonUtils_Osc.hpp"
-#include "../../common/src/PinopticonUtils_Http.hpp"
+#include "../../common/src/Pinopticon.hpp"
+#include "../../common/src/Pinopticon_Osc.hpp"
+#include "../../common/src/Pinopticon_Http.hpp"
 
 using namespace cv;
 using namespace ofxCv;
-using namespace PinopticonUtils;
+using namespace Pinopticon;
 
 //--------------------------------------------------------------
 void ofApp::setup() {
