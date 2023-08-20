@@ -315,15 +315,15 @@ void ofApp::onHTTPUploadEvent(ofxHTTP::PostUploadEventArgs& args) {
 
 // ~ ~ ~ WEBSOCKETS ~ ~ ~
 void ofApp::onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt) {
-    cout << "Websocket connection opened." << endl;// << evt.getConnectionRef().getClientAddress().toString() << endl;
+    cout << "Websocket connection opened." << evt.connection().clientAddress().toString() << endl;
 }
 
 void ofApp::onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt) {
-    cout << "Websocket connection closed." << endl; //<< evt.getConnectionRef().getClientAddress().toString() << endl;
+    cout << "Websocket connection closed." << evt.connection().clientAddress().toString() << endl;
 }
 
 void ofApp::onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt) {
-    cout << "Websocket frame was received:" << endl; // << evt.getConnectionRef().getClientAddress().toString() << endl;
+    cout << "Websocket frame was received:" << evt.connection().clientAddress().toString() << endl;
     string msg = evt.frame().getText();
     cout <<  msg << endl;
 
@@ -340,7 +340,7 @@ void ofApp::onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt) {
 
 
 void ofApp::onWebSocketErrorEvent(ofxHTTP::WebSocketErrorEventArgs& evt) {
-    cout << "Websocket Error." << endl; //<< evt.getConnectionRef().getClientAddress().toString() << endl;
+    cout << "Websocket Error." << evt.connection().clientAddress().toString() << endl;
 }
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
