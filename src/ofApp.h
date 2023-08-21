@@ -9,6 +9,10 @@
 #include "ofxJSONElement.h"
 #include "ofxCrypto.h"
 
+#include "../../common/src/Pinopticon.hpp"
+#include "../../common/src/Pinopticon_Osc.hpp"
+#include "../../common/src/Pinopticon_Http.hpp"
+
 #define NUM_MESSAGES 30 // how many past ws messages we want to keep
 
 class ofApp : public ofBaseApp {
