@@ -48,7 +48,6 @@ void ofApp::setup() {
     wsPort = settings.getValue("settings:ws_port", 7112);
     postPort = settings.getValue("settings:post_port", 7113);
 
-    debug = (bool) settings.getValue("settings:debug", 1);
     rpiCamVersion = settings.getValue("settings:rpi_cam_version", 1);
     stillCompression = settings.getValue("settings:still_compression", 100);
 
@@ -197,7 +196,7 @@ void ofApp::draw() {
             for (int h=0; h<255; h += int(255/contourSlices)) {
                 contourFinder.setThreshold(h);
                 contourFinder.findContours(frame);
-                contourFinder.draw();            
+                if (debug) contourFinder.draw();            
 
                 int n = contourFinder.size();
                 for (int i = 0; i < n; i++) {
@@ -396,87 +395,3 @@ void ofApp::streamPhoto() {
     wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(msg));
 }
 
-// ~ ~ ~ OSC ~ ~ ~
-/*
-void ofApp::sendOscVideo() {
-    ofxOscMessage m;
-    m.setAddress("/video");
-
-    m.addStringArg(hostName);    
-    m.addStringArg(sessionId);    
-    m.addBlobArg(videoBuffer);
-    m.addIntArg(timestamp);
-    
-    sender.sendMessage(m);
-}
-
-void ofApp::sendOscBlobs(int index, float x, float y) {
-    ofxOscMessage m;
-    m.setAddress("/blob");
-
-    m.addStringArg(hostName);   
-    m.addStringArg(sessionId);
-    m.addIntArg(index);  
-    m.addFloatArg(x / (float) width);
-    m.addFloatArg(y / (float) height);
-    m.addIntArg(timestamp);
-
-    sender.sendMessage(m);
-}
-
-void ofApp::sendOscContours(int index) {
-    ofxOscMessage m;
-    m.setAddress("/contour");
-    
-    m.addStringArg(hostName);
-    m.addStringArg(sessionId);
-    m.addIntArg(index);
-    m.addBlobArg(contourColorBuffer);
-    m.addBlobArg(contourPointsBuffer);
-    m.addIntArg(timestamp);
-
-    sender.sendMessage(m);
-}
-
-void ofApp::sendOscPixel(float x, float y) {
-    ofxOscMessage m;
-    m.setAddress("/pixel");
-
-    m.addStringArg(hostName);   
-    m.addStringArg(sessionId);   
-    m.addFloatArg(x / (float) width);
-    m.addFloatArg(y / (float) height);
-    m.addIntArg(timestamp);
-    
-    sender.sendMessage(m);
-}
-
-// ~ ~ ~ ~ ~ 
-
-void ofApp::sendWsVideo() { 
-    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"video\":\"" + ofxCrypto::base64_encode(videoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
-}
-
-void ofApp::sendWsBlobs(int index, float x, float y) {   
-    float xPos = x / (float) width;
-    float yPos = y / (float) height;
-    
-    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
-}
-
-void ofApp::sendWsContours(int index) {
-    //string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"index\":\"" + ofToString(index) + "\",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"index\":" + ofToString(index) + ",\"colors\":\"" + ofxCrypto::base64_encode(contourColorBuffer) + "\",\"points\":\"" + ofxCrypto::base64_encode(contourPointsBuffer) + "\",\"timestamp\":" + ofToString(timestamp) + "}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
-}
-
-void ofApp::sendWsPixel(float x, float y) {   
-    float xPos = x / (float) width;
-    float yPos = y / (float) height;
-
-    string msg = "{\"unique_id\":\"" + sessionId + "\",\"hostname\":\"" + hostName + "\",\"x\":\"" + ofToString(xPos) + "\",\"y\":\"" + ofToString(yPos) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-    wsServer.webSocketRoute().broadcast(ofxHTTP::WebSocketFrame(cleanString(msg)));
-}
-*/
