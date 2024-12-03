@@ -11,13 +11,13 @@
     <cam_rotation>0</cam_rotation>
     <width>640</width>
     <height>480</height>
-    <debug>0</debug>
+    <debug>1</debug>
     <!-- * -->
     <rpi_cam_version>2</rpi_cam_version>
     <still_compression>100</still_compression>
     <!-- * -->
     <send_osc>1</send_osc>
-    <send_ws>1</send_ws>
+    <send_ws>0</send_ws>
     <send_mjpeg>0</send_mjpeg>
     <send_http>0</send_http>
     <!-- * -->
