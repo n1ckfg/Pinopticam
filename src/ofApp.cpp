@@ -108,16 +108,16 @@ void ofApp::setup() {
     int maxClientBitRate = settings.getValue("settings:max_stream_bitrate", 512); // default 1024
     int maxClientFrameRate = settings.getValue("settings:max_stream_framerate", 30); // default 30
     int maxClientQueueSize = settings.getValue("settings:max_stream_queue", 10); // default 10
-    setupMjpeg(streamServer, streamPort, maxClientConnections, maxClientBitRate, maxClientFrameRate, maxClientQueueSize, width, height, "live_view.html");
+    if (sendMjpeg) setupMjpeg(streamServer, streamPort, maxClientConnections, maxClientBitRate, maxClientFrameRate, maxClientQueueSize, width, height, "live_view.html");
 
     // * post form *
-    setupHttp(this, postServer, postPort, "result.html");
+    if (sendHttp) setupHttp(this, postServer, postPort, "result.html");
 
     // * websockets *
     // events: connect, open, close, idle, message, broadcast
-    setupWsServer(this, wsServer, wsPort);
+    if (sendWs) setupWsServer(this, wsServer, wsPort);
 
-    setupOscSender(sender, oscHost, oscPort);
+    if (sendOsc) setupOscSender(sender, oscHost, oscPort);
 }
 
 //--------------------------------------------------------------
