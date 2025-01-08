@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <settings>
-    <osc_host>BrazilV.local</osc_host>
+    <osc_host>Example.local</osc_host>
     <osc_port>7110</osc_port>
     <stream_port>7111</stream_port>
     <ws_port>7112</ws_port>
@@ -16,14 +16,14 @@
     <rpi_cam_version>2</rpi_cam_version>
     <still_compression>100</still_compression>
     <!-- * -->
-    <send_osc>1</send_osc>
+    <send_osc>0</send_osc>
     <send_ws>0</send_ws>
-    <send_mjpeg>0</send_mjpeg>
+    <send_mjpeg>1</send_mjpeg>
     <send_http>0</send_http>
     <!-- * -->
     <brightest_pixel>0</brightest_pixel>
     <blobs>0</blobs>
-    <contours>1</contours>
+    <contours>0</contours>
     <sync_video>0</sync_video>
     <!-- * -->
     <sync_video_quality>3</sync_video_quality>
